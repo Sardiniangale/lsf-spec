@@ -1,10 +1,10 @@
-#The .lsf standard
+# The .lsf standard
 
 It is currently in the very early testing phase. I want to hit these design standards
 
-- Self‑contained, all metadata pdf's ect ect must be all contained within a single .lsf
-- Offline, there is zero need for communication to any external server for file authenticity 
-- Human readable, the entire backbone is written in JSON, it must be easily inspectable in any text editor
+- Self contained. All metadata pdf's ect ect must be all contained within a single .lsf
+- Offline. There is zero need for communication to any external server for file authenticity 
+- Human readable. The entire backbone is written in JSON, it must be easily inspectable in any text editor
 - Content agnostic. It needs to be able to work for any subject with a marking rubric
 - Merge friendly. It needs to be able to work with multiple people such that they can all independently work on the same course at the same/similar time. User controlled merging at its core
 - Backward compatible. A stable format_version with clear SemVer rules; implementations must preserve unknown fields.
