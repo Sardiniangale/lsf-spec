@@ -21,4 +21,4 @@ This repo is specifically for the official standardized version. Testing and des
 
 ---
 
-If you have any questions or issues feel free to write a mail at asm@cadaxity.it
+If you have any questions or issues feel free to write a mail at asm@cadaxity.it or @asm:cadaxity.it on matrix.
