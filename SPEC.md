@@ -1,9 +1,11 @@
 # LSF: Lightweight Study File Specification
 ## Version 0.1.0
 
-License: MIT License 
-Repository pre-release: https://git.dyno.cx/Sardiniangale/Lightweight_Study_Format
-Repository full-release: https://github.com/Sardiniangale/lsf-spec
+License: MIT License
+
+Repository pre-release: (https://git.dyno.cx/Sardiniangale/Lightweight_Study_Format)
+
+Repository full-release: (https://github.com/Sardiniangale/lsf-spec)
 
 ---
 
@@ -132,6 +134,104 @@ Step 6: first 32 hex chars → (see §14 for verified value)
 
 ---
 
-## 5. The course.json Schema
+## 5. The course.json Schema (still working on this)
 
-still working on this
+### 5.1 Top Level
+
+```json
+{
+  "format_version": "1.0.0", (assuming this is for the full release)
+  "course": { },
+  "papers": [ ],
+  "practice_items": [ ],
+  "metadata": { }
+}
+```
+
+Field, Type, Required, Description 
+
+`format_version`, string (SemVer), REQUIRED, Version of the LSF spec this file conforms to. MUST be a valid SemVer string. 
+`course`, object, REQUIRED, Course identity and rubric. See §5.2. 
+`papers`, array, REQUIRED, List of past paper objects. MAY be empty (`[]`). (refrences future) 
+`practice_items`, array, REQUIRED, List of standalone practice items. MAY be empty (`[]`). (refrences future) 
+`metadata`, object, REQUIRED, File-level metadata. 
+
+No other top-level fields are defined by this specification. Unknown top-level fields MUST be preserved per ---
+
+---
+
+### 5.2 course Object
+
+```json
+{
+  "id": "1a79a4d60de6718e8e5b326e338ae533",
+  "institution": "Massachusetts Institute of Technology",
+  "course_code": "18.100B",
+  "course_name": "Real Analysis",
+  "curriculum_version": "2024-2025",
+  "criteria": [ ],
+  "exam_type": "proof_based",
+  "extensions": { }
+}
+```
+
+Field, Type, Required, Description
+
+`id`, string, REQUIRED, Deterministic course identifier (§4). MUST be exactly 32 lowercase hex characters.
+`institution`, string, REQUIRED, Full institution name as entered by the user. MUST NOT be empty.
+`course_code`, string, REQUIRED, Official course code for example `"18.100B"`. MUST NOT be empty.
+`course_name`, string, REQUIRED, Readable course name. MUST NOT be empty.
+`curriculum_version`, string, OPTIONAL, Free-form syllabus or curriculum identifier. Used for merge warnings.
+`criteria`, array, REQUIRED, Grading rubric (§5.3). MUST contain at least one criterion.
+`exam_type`, string, OPTIONAL, Hint for tools. For example some suggested values: `"proof_based"`, `"written"`, `"mixed"`, `"lab"`, `"multiple_choice"`. Tools MUST accept unknown values.
+`extensions`, object, OPTIONAL, ---.
+
+---
+
+### 5.3 Grading Criterion
+
+Each element in `course.criteria`:
+
+```json
+{
+  "id": "rigor",
+  "name": "Logical Rigor",
+  "max_score": 5,
+  "description": "Correctness and completeness of proofs"
+}
+```
+
+Field, Type, Required, Description
+
+`id`, string, REQUIRED, Unique key within `course.criteria`. MUST match the regex `^[a-z0-9_-]+$`.
+`name`, string, REQUIRED, Name.
+`max_score`, number, REQUIRED, Maximum achievable score. MUST be a positive number.
+`description`, string, OPTIONAL, Gives description of what the criteria is describing.
+
+Uniqueness: All `id` values across `course.criteria` MUST be unique. Duplicate IDs for criteria will result in a validation error.
+
+---
+
+### 5.4 Self-Assessment Object
+
+```json
+{
+  "obtained_marks": {
+    "rigor": 4,
+    "clarity": 3
+  },
+  "notes": "Made a typo in line 3."
+}
+```
+
+Field, Type, Required, Description
+
+`obtained_marks`, object, REQUIRED, Map of criterion `id` -> score (number).
+`notes`, string, OPTIONAL, Free-form reflection on this attempt. |
+
+Constraint: Every key in `obtained_marks` MUST correspond to an `id` in `course.criteria`. Scores MUST be non-negative numbers and SHOULD NOT exceed the criterion's `max_score`, tools MAY warn but MUST NOT reject. Unknown criterion keys are a validation error.
+
+---
+
+### 5.5 Answer Object
+
