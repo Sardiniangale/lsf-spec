@@ -13,4 +13,8 @@ It is currently in the very early testing phase. I want to hit these design stan
 
 ---
 
+This first Pre-release iteration is just for initial prototyping and testing, but its almost ready. 
+
+---
+
 Im primarily designing this so I can implement it into another oss study app later on. But I figured I might as well make the standard open and public while I am at it. I will write a base design doc very soon (within week) and it will also be availible on github as well, however this is just where I can mess around before making public.
