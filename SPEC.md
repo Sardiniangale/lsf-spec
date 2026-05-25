@@ -1,8 +1,8 @@
-# LSF: Lightweight Study Format Specification
-## Version 1.0.0 (pre-release NOT YET FULLY RELEASED)
+# LSF: Lightweight Study File Specification
+## Version 1.0.0
 
-Status: Release Candidate
-License: MIT
+Status: Alpha
+License: MIT License
 Repository pre-release: https://git.dyno.cx/Sardiniangale/Lightweight_Study_Format
 Repository full-release: https://github.com/Sardiniangale/lsf-spec
 
@@ -50,28 +50,28 @@ Repository full-release: https://github.com/Sardiniangale/lsf-spec
 
 ## 1. Terminology
 
-The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL in this document are to be interpreted as described in RFC 2119.
+The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL in this document are to be interpreted as described in RFC 2119 (https://www.rfc-editor.org/rfc/rfc2119).
 
 Term: LSF file
-Definition: A ZIP archive with the .lsf extension conforming to this specification.
+  Definition: A ZIP archive with the .lsf extension conforming to this specification.
 
 Term: course.json
-Definition: The single required JSON file inside an LSF file containing all structured data.
+  Definition: The single required JSON file inside an LSF file containing all structured data.
 
 Term: merge
-Definition: The act of combining two LSF files with the same course.id into one.
+  Definition: The act of combining two LSF files with the same course.id into one.
 
 Term: author
-Definition: Any person who creates or modifies content within an LSF file.
+  Definition: Any person who creates or modifies content within an LSF file.
 
 Term: compliant writer
-Definition: A tool that produces LSF files conforming to section 12.1.
+  Definition: A tool that produces LSF files conforming to section 12.1.
 
 Term: compliant reader
-Definition: A tool that consumes LSF files conforming to section 12.2.
+  Definition: A tool that consumes LSF files conforming to section 12.2.
 
 Term: UUID4
-Definition: A randomly generated UUID per RFC 4122 section 4.4, represented as a lowercase hyphenated string (e.g., 550e8400-e29b-41d4-a716-446655440000).
+  Definition: A randomly generated UUID per RFC 4122 section 4.4 (https://www.rfc-editor.org/rfc/rfc4122#section-4.4), represented as a lowercase hyphenated string (e.g., 550e8400-e29b-41d4-a716-446655440000).
 
 ---
 
@@ -86,7 +86,7 @@ LSF is built on the following principles, listed in priority order. When princip
 5. Merge-friendly — Multiple people can independently work on the same course and combine their files later. Merging is user-controlled; nothing is silently overwritten.
 6. Backward-compatible — A stable format_version with clear SemVer rules. Parsers MUST preserve unknown fields. See section 11.
 7. Portable — A standard ZIP archive with no OS-specific paths, no symlinks, no extended attributes. Runs on any platform that can open a ZIP file.
-8. No proprietary lock-in — An open standard under MIT. Any tool can implement it without permission or fees.
+8. No proprietary lock-in — An open standard under MIT License. Any tool can implement it without permission or fees.
 
 ---
 
@@ -96,9 +96,9 @@ An LSF file is a ZIP archive (using Deflate or Store compression) with the file 
 
 Internal Structure:
 
-<filename>.lsf        ZIP archive
-├── course.json       REQUIRED
-└── media/            OPTIONAL directory
+<filename>.lsf           ZIP archive
+├── course.json          REQUIRED
+└── media/               OPTIONAL directory
     ├── example.jpg
     ├── solution.pdf
     └── ...
@@ -111,7 +111,7 @@ Rules:
 - The media/ directory is OPTIONAL. It MUST be named exactly media (lowercase).
 - Files inside media/ MUST be referenced by their relative path from the archive root (e.g., media/scan.jpg).
 - No symlinks, hard links, or executable bits are permitted inside the archive.
-- Additional files or directories outside media/ (e.g .git) MUST be ignored by compliant readers and MUST NOT be written by compliant writers.
+- Additional files or directories outside media/ (e.g., .git, __MACOSX) MUST be ignored by compliant readers and MUST NOT be written by compliant writers.
 - The archive MUST NOT contain encrypted ZIP entries.
 
 File Naming:
@@ -181,30 +181,13 @@ Important Notes:
   "metadata": { }
 }
 
-Field: format_version
-Type: string (SemVer)
-Required: REQUIRED
-Description: Version of the LSF spec this file conforms to. MUST be a valid SemVer string.
+Fields:
 
-Field: course
-Type: object
-Required: REQUIRED
-Description: Course identity and rubric. See section 5.2.
-
-Field: papers
-Type: array
-Required: REQUIRED
-Description: List of past paper objects. MAY be empty ([]). See section 5.7.
-
-Field: practice_items
-Type: array
-Required: REQUIRED
-Description: List of standalone practice items. MAY be empty ([]). See section 5.9.
-
-Field: metadata
-Type: object
-Required: REQUIRED
-Description: File-level metadata. See section 5.10.
+- format_version (string, SemVer, REQUIRED): Version of the LSF spec this file conforms to. MUST be a valid SemVer string.
+- course (object, REQUIRED): Course identity and rubric. See section 5.2.
+- papers (array, REQUIRED): List of past paper objects. MAY be empty ([]). See section 5.7.
+- practice_items (array, REQUIRED): List of standalone practice items. MAY be empty ([]). See section 5.9.
+- metadata (object, REQUIRED): File-level metadata. See section 5.10.
 
 No other top-level fields are defined by this specification. Unknown top-level fields MUST be preserved per section 6.
 
@@ -223,45 +206,16 @@ No other top-level fields are defined by this specification. Unknown top-level f
   "extensions": { }
 }
 
-Field: id
-Type: string
-Required: REQUIRED
-Description: Deterministic course identifier (section 4). MUST be exactly 32 lowercase hex characters.
+Fields:
 
-Field: institution
-Type: string
-Required: REQUIRED
-Description: Full institution name as entered by the user. MUST NOT be empty.
-
-Field: course_code
-Type: string
-Required: REQUIRED
-Description: Official course code (e.g., "18.100B"). MUST NOT be empty.
-
-Field: course_name
-Type: string
-Required: REQUIRED
-Description: Human-readable course name. MUST NOT be empty.
-
-Field: curriculum_version
-Type: string
-Required: OPTIONAL
-Description: Free-form syllabus or curriculum identifier. Used for merge warnings (section 9.5).
-
-Field: criteria
-Type: array
-Required: REQUIRED
-Description: Grading rubric (section 5.3). MUST contain at least one criterion.
-
-Field: exam_type
-Type: string
-Required: OPTIONAL
-Description: Hint for tools. Suggested values: "proof_based", "written", "mixed", "lab", "multiple_choice". Tools MUST accept unknown values.
-
-Field: extensions
-Type: object
-Required: OPTIONAL
-Description: See section 6.
+- id (string, REQUIRED): Deterministic course identifier (section 4). MUST be exactly 32 lowercase hex characters.
+- institution (string, REQUIRED): Full institution name as entered by the user. MUST NOT be empty.
+- course_code (string, REQUIRED): Official course code (e.g., "18.100B"). MUST NOT be empty.
+- course_name (string, REQUIRED): Human-readable course name. MUST NOT be empty.
+- curriculum_version (string, OPTIONAL): Free-form syllabus or curriculum identifier. Used for merge warnings (section 9.5).
+- criteria (array, REQUIRED): Grading rubric (section 5.3). MUST contain at least one criterion.
+- exam_type (string, OPTIONAL): Hint for tools. Suggested values: "proof_based", "written", "mixed", "lab", "multiple_choice". Tools MUST accept unknown values.
+- extensions (object, OPTIONAL): See section 6.
 
 ---
 
@@ -276,25 +230,12 @@ Each element in course.criteria:
   "description": "Correctness and completeness of proofs"
 }
 
-Field: id
-Type: string
-Required: REQUIRED
-Description: Unique key within course.criteria. MUST match the regex ^[a-z0-9_-]+$.
+Fields:
 
-Field: name
-Type: string
-Required: REQUIRED
-Description: Human-readable name.
-
-Field: max_score
-Type: number
-Required: REQUIRED
-Description: Maximum achievable score. MUST be a positive number.
-
-Field: description
-Type: string
-Required: OPTIONAL
-Description: Explanation of what this criterion measures.
+- id (string, REQUIRED): Unique key within course.criteria. MUST match the regex ^[a-z0-9_-]+$.
+- name (string, REQUIRED): Human-readable name.
+- max_score (number, REQUIRED): Maximum achievable score. MUST be a positive number.
+- description (string, OPTIONAL): Explanation of what this criterion measures.
 
 Uniqueness: All id values across course.criteria MUST be unique. Duplicate criterion IDs are a validation error.
 
@@ -310,15 +251,10 @@ Uniqueness: All id values across course.criteria MUST be unique. Duplicate crite
   "notes": "Forgot to justify the base case."
 }
 
-Field: obtained_marks
-Type: object
-Required: REQUIRED
-Description: Map of criterion id → score (number).
+Fields:
 
-Field: notes
-Type: string
-Required: OPTIONAL
-Description: Free-form reflection on this attempt.
+- obtained_marks (object, REQUIRED): Map of criterion id → score (number).
+- notes (string, OPTIONAL): Free-form reflection on this attempt.
 
 Constraint: Every key in obtained_marks MUST correspond to an id in course.criteria. Scores MUST be non-negative numbers and SHOULD NOT exceed the criterion's max_score (tools MAY warn but MUST NOT reject). Unknown criterion keys are a validation error.
 
@@ -338,37 +274,17 @@ Constraint: Every key in obtained_marks MUST correspond to an id in course.crite
   ]
 }
 
-Field: text
-Type: string
-Required: OPTIONAL
-Description: Typed answer. Markdown and LaTeX ($...$, $$...$$) are permitted.
+Fields:
 
-Field: media
-Type: array
-Required: OPTIONAL
-Description: List of attached files. MAY be empty or absent.
+- text (string, OPTIONAL): Typed answer. Markdown and LaTeX ($...$, $$...$$) are permitted.
+- media (array, OPTIONAL): List of attached files. MAY be empty or absent.
 
 Each entry in media:
 
-Field: path
-Type: string
-Required: REQUIRED
-Description: Relative path from archive root. MUST start with media/.
-
-Field: mime_type
-Type: string
-Required: REQUIRED
-Description: IANA media type (e.g., "image/jpeg", "application/pdf").
-
-Field: description
-Type: string
-Required: OPTIONAL
-Description: Human-readable description of the attached file.
-
-Field: available
-Type: boolean
-Required: OPTIONAL
-Description: If false, the file was intentionally stripped (e.g., for privacy or size). Readers MUST NOT treat a missing file as a parse error when available is false. Defaults to true when absent.
+- path (string, REQUIRED): Relative path from archive root. MUST start with media/.
+- mime_type (string, REQUIRED): IANA media type (e.g., "image/jpeg", "application/pdf").
+- description (string, OPTIONAL): Human-readable description of the attached file.
+- available (boolean, OPTIONAL): If false, the file was intentionally stripped (e.g., for privacy or size). Readers MUST NOT treat a missing file as a parse error when available is false. Defaults to true when absent.
 
 Constraint: Referenced media/ paths MUST point to a file that exists inside the ZIP, unless available is explicitly false.
 
@@ -387,25 +303,12 @@ Used to mark an item as disputed or verified. Appears as an OPTIONAL field quali
   "flagged_at": "2026-05-10T14:00:00Z"
 }
 
-Field: status
-Type: string
-Required: REQUIRED
-Description: One of: "unreviewed", "disputed", "verified".
+Fields:
 
-Field: reason
-Type: string
-Required: OPTIONAL
-Description: Human-readable explanation. SHOULD be present when status is "disputed".
-
-Field: flagged_by
-Type: string (UUID4)
-Required: REQUIRED
-Description: The author_id of the person setting this flag.
-
-Field: flagged_at
-Type: string (datetime)
-Required: REQUIRED
-Description: UTC datetime in YYYY-MM-DDTHH:MM:SSZ format.
+- status (string, REQUIRED): One of: "unreviewed", "disputed", "verified".
+- reason (string, OPTIONAL): Human-readable explanation. SHOULD be present when status is "disputed".
+- flagged_by (string, UUID4, REQUIRED): The author_id of the person setting this flag.
+- flagged_at (string, datetime, REQUIRED): UTC datetime in YYYY-MM-DDTHH:MM:SSZ format.
 
 Status semantics:
 
@@ -438,75 +341,22 @@ Each element in the top-level papers array:
   "extensions": { }
 }
 
-Field: id
-Type: string (UUID4)
-Required: REQUIRED
-Description: Globally unique identifier for this paper. MUST be a UUID4. Generated once at creation and never changed.
+Fields:
 
-Field: label
-Type: string
-Required: OPTIONAL
-Description: Short display label (e.g., "Midterm 1"). Used by tools as the primary display name.
-
-Field: title
-Type: string
-Required: REQUIRED
-Description: Full title of the exam or paper.
-
-Field: date
-Type: string
-Required: REQUIRED
-Description: Date the exam was taken. MUST be in YYYY-MM-DD format.
-
-Field: academic_year
-Type: string
-Required: OPTIONAL
-Description: e.g., "2024-2025".
-
-Field: term
-Type: string
-Required: OPTIONAL
-Description: e.g., "Spring", "Fall", "Semester 1".
-
-Field: total_time_minutes
-Type: number
-Required: OPTIONAL
-Description: Duration of the exam in minutes. MUST be a positive integer if present.
-
-Field: questions
-Type: array
-Required: REQUIRED
-Description: List of question objects (section 5.8). MAY be empty.
-
-Field: reflection
-Type: string
-Required: OPTIONAL
-Description: Free-form post-exam notes.
-
-Field: source
-Type: string
-Required: OPTIONAL
-Description: Origin. Suggested values: "official_exam", "mock_exam", "peer_shared". Tools MUST accept unknown values.
-
-Field: author_id
-Type: string (UUID4)
-Required: REQUIRED
-Description: UUID4 of the person who created this entry (section 8).
-
-Field: imported_from
-Type: string (UUID4) or null
-Required: OPTIONAL
-Description: If this paper was imported from another person's file, their author_id. null if created by the author directly.
-
-Field: quality_flag
-Type: object or null
-Required: OPTIONAL
-Description: See section 5.6. null or absent means "unreviewed".
-
-Field: extensions
-Type: object
-Required: OPTIONAL
-Description: See section 6.
+- id (string, UUID4, REQUIRED): Globally unique identifier for this paper. MUST be a UUID4. Generated once at creation and never changed.
+- label (string, OPTIONAL): Short display label (e.g., "Midterm 1"). Used by tools as the primary display name.
+- title (string, REQUIRED): Full title of the exam or paper.
+- date (string, REQUIRED): Date the exam was taken. MUST be in YYYY-MM-DD format.
+- academic_year (string, OPTIONAL): e.g., "2024-2025".
+- term (string, OPTIONAL): e.g., "Spring", "Fall", "Semester 1".
+- total_time_minutes (number, OPTIONAL): Duration of the exam in minutes. MUST be a positive integer if present.
+- questions (array, REQUIRED): List of question objects (section 5.8). MAY be empty.
+- reflection (string, OPTIONAL): Free-form post-exam notes.
+- source (string, OPTIONAL): Origin. Suggested values: "official_exam", "mock_exam", "peer_shared". Tools MUST accept unknown values.
+- author_id (string, UUID4, REQUIRED): UUID4 of the person who created this entry (section 8).
+- imported_from (string, UUID4 or null, OPTIONAL): If this paper was imported from another person's file, their author_id. null if created by the author directly.
+- quality_flag (object or null, OPTIONAL): See section 5.6. null or absent means "unreviewed".
+- extensions (object, OPTIONAL): See section 6.
 
 Uniqueness: All id values across the papers array MUST be unique. Duplicate paper IDs are a validation error.
 
@@ -532,55 +382,18 @@ Each element in a paper.questions array:
   "extensions": { }
 }
 
-Field: id
-Type: string (UUID4)
-Required: REQUIRED
-Description: Globally unique identifier for this question. MUST be a UUID4. Generated once at creation and never changed.
+Fields:
 
-Field: label
-Type: string
-Required: OPTIONAL
-Description: Display label (e.g., "Q1", "Question 3b"). If absent, tools MAY display a truncated id.
-
-Field: topic_tags
-Type: array of strings
-Required: OPTIONAL
-Description: Labels for filtering and organisation. Each tag MUST be a non-empty string.
-
-Field: difficulty
-Type: number
-Required: OPTIONAL
-Description: Difficulty rating. RECOMMENDED range is 1–5. Tools MUST accept values outside this range.
-
-Field: question_text
-Type: string
-Required: REQUIRED
-Description: The question itself. Markdown and LaTeX are permitted. MUST NOT be empty.
-
-Field: hints
-Type: array of strings
-Required: OPTIONAL
-Description: Ordered list of progressive hints. Each hint MUST be a non-empty string.
-
-Field: student_answer
-Type: object
-Required: OPTIONAL
-Description: The student's answer. See section 5.5.
-
-Field: self_assessment
-Type: object
-Required: OPTIONAL
-Description: Self-scoring against rubric. See section 5.4.
-
-Field: quality_flag
-Type: object or null
-Required: OPTIONAL
-Description: See section 5.6.
-
-Field: extensions
-Type: object
-Required: OPTIONAL
-Description: See section 6.
+- id (string, UUID4, REQUIRED): Globally unique identifier for this question. MUST be a UUID4. Generated once at creation and never changed.
+- label (string, OPTIONAL): Display label (e.g., "Q1", "Question 3b"). If absent, tools MAY display a truncated id.
+- topic_tags (array of strings, OPTIONAL): Labels for filtering and organisation. Each tag MUST be a non-empty string.
+- difficulty (number, OPTIONAL): Difficulty rating. RECOMMENDED range is 1–5. Tools MUST accept values outside this range.
+- question_text (string, REQUIRED): The question itself. Markdown and LaTeX are permitted. MUST NOT be empty.
+- hints (array of strings, OPTIONAL): Ordered list of progressive hints. Each hint MUST be a non-empty string.
+- student_answer (object, OPTIONAL): The student's answer. See section 5.5.
+- self_assessment (object, OPTIONAL): Self-scoring against rubric. See section 5.4.
+- quality_flag (object or null, OPTIONAL): See section 5.6.
+- extensions (object, OPTIONAL): See section 6.
 
 Uniqueness: All id values across questions within a single paper MUST be unique. IDs SHOULD be globally unique across all questions in all papers, since UUID4 collision is astronomically unlikely.
 
@@ -609,25 +422,10 @@ Practice items share all fields with a question object (section 5.8), plus:
 
 Additional fields beyond section 5.8:
 
-Field: source
-Type: string
-Required: OPTIONAL
-Description: Origin. Suggested: "textbook", "weekly_quiz", "online", "lecture_problem_set".
-
-Field: source_detail
-Type: string
-Required: OPTIONAL
-Description: Full bibliographic reference.
-
-Field: date_added
-Type: string
-Required: OPTIONAL
-Description: Date added by the student. MUST be in YYYY-MM-DD format if present.
-
-Field: author_id
-Type: string (UUID4)
-Required: REQUIRED
-Description: UUID4 of the person who added this item (section 8).
+- source (string, OPTIONAL): Origin. Suggested: "textbook", "weekly_quiz", "online", "lecture_problem_set".
+- source_detail (string, OPTIONAL): Full bibliographic reference.
+- date_added (string, OPTIONAL): Date added by the student. MUST be in YYYY-MM-DD format if present.
+- author_id (string, UUID4, REQUIRED): UUID4 of the person who added this item (section 8).
 
 Uniqueness: All id values across the practice_items array MUST be unique.
 
@@ -645,40 +443,15 @@ Uniqueness: All id values across the practice_items array MUST be unique.
   "extensions": { }
 }
 
-Field: last_modified
-Type: string (datetime)
-Required: REQUIRED
-Description: UTC datetime of last save. MUST be in YYYY-MM-DDTHH:MM:SSZ format.
+Fields:
 
-Field: created_at
-Type: string (datetime)
-Required: OPTIONAL
-Description: UTC datetime the file was first created. MUST be in YYYY-MM-DDTHH:MM:SSZ format if present.
-
-Field: software
-Type: string
-Required: OPTIONAL
-Description: Name and version of the tool that last saved the file.
-
-Field: created_by
-Type: string (UUID4)
-Required: OPTIONAL
-Description: author_id of the original creator of this file.
-
-Field: signature
-Type: string or null
-Required: OPTIONAL
-Description: Reserved for digital signatures (e.g., base64-encoded PGP detached signature). null if unused.
-
-Field: lineage
-Type: array
-Required: REQUIRED
-Description: Ordered list of provenance events (section 5.11). MAY be empty. MUST NOT be absent.
-
-Field: extensions
-Type: object
-Required: OPTIONAL
-Description: See section 6.
+- last_modified (string, datetime, REQUIRED): UTC datetime of last save. MUST be in YYYY-MM-DDTHH:MM:SSZ format.
+- created_at (string, datetime, OPTIONAL): UTC datetime the file was first created. MUST be in YYYY-MM-DDTHH:MM:SSZ format if present.
+- software (string, OPTIONAL): Name and version of the tool that last saved the file.
+- created_by (string, UUID4, OPTIONAL): author_id of the original creator of this file.
+- signature (string or null, OPTIONAL): Reserved for digital signatures (e.g., base64-encoded PGP detached signature). null if unused.
+- lineage (array, REQUIRED): Ordered list of provenance events (section 5.11). MAY be empty. MUST NOT be absent.
+- extensions (object, OPTIONAL): See section 6.
 
 ---
 
@@ -695,35 +468,14 @@ Each element in metadata.lineage:
   "merged_sources": null
 }
 
-Field: event_id
-Type: string (UUID4)
-Required: REQUIRED
-Description: Globally unique identifier for this event. Used for deduplication during merge.
+Fields:
 
-Field: type
-Type: string
-Required: REQUIRED
-Description: One of: "create", "merge", "edit". Tools MUST accept unknown types.
-
-Field: by
-Type: string (UUID4)
-Required: REQUIRED
-Description: author_id of the person who performed this action.
-
-Field: at
-Type: string (datetime)
-Required: REQUIRED
-Description: UTC datetime of the event. MUST be in YYYY-MM-DDTHH:MM:SSZ format.
-
-Field: software
-Type: string
-Required: OPTIONAL
-Description: Tool name and version that generated this event.
-
-Field: merged_sources
-Type: array of UUID4 or null
-Required: OPTIONAL
-Description: For "merge" events: list of author_id values from the files that were merged into this one. null or absent for non-merge events.
+- event_id (string, UUID4, REQUIRED): Globally unique identifier for this event. Used for deduplication during merge.
+- type (string, REQUIRED): One of: "create", "merge", "edit". Tools MUST accept unknown types.
+- by (string, UUID4, REQUIRED): author_id of the person who performed this action.
+- at (string, datetime, REQUIRED): UTC datetime of the event. MUST be in YYYY-MM-DDTHH:MM:SSZ format.
+- software (string, OPTIONAL): Tool name and version that generated this event.
+- merged_sources (array of UUID4 or null, OPTIONAL): For "merge" events: list of author_id values from the files that were merged into this one. null or absent for non-merge events.
 
 Append-only rule: Tools MUST NOT delete or modify existing lineage events. When saving after any edit, tools MUST append a new "edit" event. When saving after a merge, tools MUST append a new "merge" event.
 
@@ -735,14 +487,14 @@ Merge deduplication: When two files are merged, the resulting lineage array is t
 
 Every major object in this spec (course, paper, question, practice_item, self_assessment, metadata, and any answer) MAY contain an extensions field. The extensions field, if present, MUST be a JSON object.
 
-Rules for All Implementations
+Rules for All Implementations:
 
 - Implementations MUST preserve all extensions keys when reading and re-saving a file, even if the keys are not understood.
 - Implementations MUST NOT reject a file solely because it contains unknown extensions keys.
 - Implementations MUST NOT reject a file solely because it contains unknown top-level or nested fields (forward compatibility).
 - Interpretation of extension data is the sole responsibility of the tool that wrote it.
 
-Namespacing Convention
+Namespacing Convention:
 
 Extension keys SHOULD be namespaced to avoid collisions:
 
@@ -755,7 +507,7 @@ Extension keys SHOULD be namespaced to avoid collisions:
 
 The RECOMMENDED format for namespace keys is reverse-domain notation. Tools MAY use any string key, but SHOULD namespace to prevent collisions with future spec fields.
 
-Extension Profiles
+Extension Profiles:
 
 Community-defined extension profiles (documents describing agreed-upon extension keys for a specific use case) MAY be published separately. The core spec does not enumerate or mandate any extension profile.
 
@@ -768,7 +520,7 @@ Community-defined extension profiles (documents describing agreed-upon extension
 - Media filenames MUST NOT contain path separators (i.e., no / or \ within the filename itself).
 - Filenames SHOULD be lowercase ASCII with hyphens or underscores, to maximise cross-platform compatibility. Unicode filenames are permitted but SHOULD be avoided.
 
-Content-Addressed Deduplication (RECOMMENDED)
+Content-Addressed Deduplication (RECOMMENDED):
 
 To avoid storing the same file multiple times across merged versions, compliant writers SHOULD use the following naming convention:
 
@@ -778,7 +530,7 @@ Where <sha256-prefix> is the first 16 hex characters of the SHA-256 hash of the 
 
 Implementations that do not use content-addressed names MUST NOT rename existing media/ files during a merge without updating all references in course.json.
 
-Stripped Media
+Stripped Media:
 
 When a user intentionally removes media files before sharing (e.g., for privacy or to reduce file size), all references in course.json MUST be updated to set "available": false on the affected media entries. Tools MUST NOT treat a missing file as a parse error when available is false. Tools SHOULD display a clear indicator that media is unavailable.
 
@@ -786,7 +538,7 @@ When a user intentionally removes media files before sharing (e.g., for privacy 
 
 ## 8. Authorship & Identity
 
-Author ID
+Author ID:
 
 Each user has an author_id, which is a UUID4 generated locally by the tool. It is used to attribute papers, practice items, quality flags, and lineage events.
 
@@ -797,7 +549,7 @@ Generation rules:
 - If a user works across multiple tools, the author_id SHOULD be exportable and importable so the same identity is used everywhere.
 - The author_id is not a security credential. It is a stable identifier for attribution, not authentication. Two users who accidentally share an author_id will produce a naming collision, not a security breach. The probability of UUID4 collision is negligible.
 
-Display Name
+Display Name:
 
 Tools SHOULD allow users to set a display_name alongside their author_id. This name is purely for human display and has no normative function.
 
@@ -834,19 +586,19 @@ New object: If an id appears in only one of the two input files, it is a new obj
 When a conflict is detected on an object, the following rules apply:
 
 Scenario: Same id, different content, different author_id
-Required behaviour: MUST show side-by-side preview. User MUST choose one version or manually edit. Tool MUST NOT auto-resolve.
+  Required behaviour: MUST show side-by-side preview. User MUST choose one version or manually edit. Tool MUST NOT auto-resolve.
 
 Scenario: Same id, different content, same author_id
-Required behaviour: SHOULD show a diff. Tool MAY offer "keep newer" based on last_modified. User MUST confirm.
+  Required behaviour: SHOULD show a diff. Tool MAY offer "keep newer" based on last_modified. User MUST confirm.
 
 Scenario: Same id, only extensions differ
-Required behaviour: Merge extensions objects by key union. If a key exists in both with differing values, treat as a conflict on that key alone and surface to user.
+  Required behaviour: Merge extensions objects by key union. If a key exists in both with differing values, treat as a conflict on that key alone and surface to user.
 
 Scenario: quality_flag differs
-Required behaviour: MUST show both flags to user. User MUST choose. See section 5.6.
+  Required behaviour: MUST show both flags to user. User MUST choose. See section 5.6.
 
 Scenario: New field added by one file (forward compat)
-Required behaviour: The field is preserved in the merge output regardless of which file contributed it.
+  Required behaviour: The field is preserved in the merge output regardless of which file contributed it.
 
 Author protection: An author's own entries (where author_id matches the current user's author_id) MUST NOT be silently overwritten by content from another file. The user MUST be informed if an incoming file would modify their own content.
 
@@ -886,11 +638,11 @@ All merges MUST be non-destructive:
 
 Quality flagging is a lightweight peer-review signal. It is intentionally simple: one status, one reason, one author.
 
-How It Works
+How It Works:
 
 Any user who receives an LSF file MAY set a quality_flag (section 5.6) on any question, paper, or practice item. The flag travels with the file when it is shared onward.
 
-Abuse Resistance
+Abuse Resistance:
 
 The format provides natural resistance to flagging abuse through its social structure:
 
@@ -899,7 +651,7 @@ The format provides natural resistance to flagging abuse through its social stru
 - Flags carry flagged_by (the flagger's author_id), making the source transparent.
 - Each user's copy is their own. A bad-faith file does not affect other branches of the file's propagation.
 
-Tools MUST
+Tools MUST:
 
 - Display a clear, visible warning when rendering any item with status: "disputed".
 - Display a clear, positive indicator when rendering any item with status: "verified".
@@ -907,7 +659,7 @@ Tools MUST
 - Allow users to override any incoming flag on their own copy.
 - During a merge, surface conflicting flags to the user (section 9.3).
 
-Tools MUST NOT
+Tools MUST NOT:
 
 - Prevent a user from accessing or reading disputed content. The flag is a warning, not a lock.
 - Silently remove flags from incoming files.
@@ -917,28 +669,28 @@ Tools MUST NOT
 
 ## 11. Format Versioning & Governance
 
-LSF uses Semantic Versioning 2.0.0 on the format_version field.
+LSF uses Semantic Versioning 2.0.0 (https://semver.org/) on the format_version field.
 
-Change types and their meanings:
+Change types:
 
 - Patch (1.0.x): Clarifications, typo fixes, non-semantic editorial changes to the spec text. No change to valid or invalid file content. Example: 1.0.1
 - Minor (1.x.0): New OPTIONAL fields or objects. New RECOMMENDED values for existing enum fields. All 1.x parsers remain forward-compatible. Example: 1.1.0
 - Major (x.0.0): Any breaking change: field removals, renames, changes to the course ID algorithm, changes to required fields, container restructuring. Example: 2.0.0
 
-Compatibility Guarantee
+Compatibility Guarantee:
 
-Any LSF file with format_version 1.x.y MUST be readable by any compliant 1.a.b reader where a >= x. Unknown fields encountered due to a newer minor version MUST be preserved on round-trip.
+Any LSF file with format_version 1.x.y MUST be readable by any compliant 1.a.b reader where a ≥ x. Unknown fields encountered due to a newer minor version MUST be preserved on round-trip.
 
-Version Checking by Readers
+Version Checking by Readers:
 
 - If the major version of format_version equals the reader's supported major version: proceed normally.
 - If the major version of format_version is greater than the reader's supported major version: the reader MUST warn the user that the file may use unsupported features, and MUST NOT silently corrupt or discard data.
 - If the major version of format_version is less than the reader's supported major version: the reader SHOULD offer to migrate the file to the current major version, and MUST NOT do so without explicit user confirmation.
 
-Governance
+Governance:
 
 - v1.x: The original author holds final decision authority.
-- v2.0+: An RFC process is used. Proposals are submitted as GitHub discussion, undergo a public comment period of no less than 30 days, and are decided by the core team.
+- v2.0+: An RFC process is used. Proposals are submitted in the Github discussion, undergo a public comment period of no less than 30 days, and are decided by the core team.
 - The file SCOPE.md in the repository defines what belongs in the core spec. Everything else lives in extensions or separate community profiles.
 - Minor releases: no more than 2 per calendar year. Patches: as needed, batched quarterly.
 
@@ -1064,8 +816,8 @@ Input:
   course_code  = "MATH-201"
 
 Normalization:
-  institution → "universit de paris"   (é removed, non-ASCII)
-  course_code → "math-201"             (hyphen preserved)
+  institution → "universit de paris" (é removed, non-ASCII)
+  course_code → "math-201" (hyphen preserved)
 
 Concatenated: "universit de paris|math-201"
 
@@ -1073,7 +825,7 @@ Concatenated: "universit de paris|math-201"
 
 ## 15. Complete Example
 
-Archive Layout
+Archive Layout:
 
 RealAnalysis.lsf
 ├── course.json
@@ -1081,7 +833,7 @@ RealAnalysis.lsf
     ├── proof1.jpg
     └── midterm_solutions.pdf
 
-course.json
+course.json:
 
 {
   "format_version": "1.0.0",
@@ -1261,6 +1013,4 @@ course.json
 
 ---
 
-LSF Specification v1.0.0
-Licensed under MIT
-Contributions welcome on Github
+LSF Specification v1.0.0, Licensed under MIT License, Contributions welcome
