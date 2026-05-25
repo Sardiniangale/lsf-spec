@@ -1,4 +1,4 @@
-# LSF: Lightweight Study File Specification
+# LSF: Lightweight Study Format Specification
 ## Version 1.0.0
 
 Status: Alpha
@@ -82,16 +82,14 @@ Term: UUID4
 
 LSF is built on the following principles, listed in priority order. When principles conflict, earlier ones take precedence.
 
-
 - Self contained. All metadata pdf's ect ect must be all contained within a single .lsf
-- Offline. There is zero need for communication to any external server for file authenticity 
+- Offline. There is zero need for communication to any external server for file authenticity
 - Human readable. The entire backbone is written in JSON, it must be easily inspectable in any text editor
 - Content agnostic. It needs to be able to work for any subject with a marking rubric
 - Merge friendly. It needs to be able to work with multiple people such that they can all independently work on the same course at the same/similar time. User controlled merging at its core
 - Backward compatible. A stable format_version with clear SemVer rules; implementations must preserve unknown fields.
 - Portable. Its a standard ZIP archive renameable to .lsf, with zero OS specific paths.
 - No proprietary lock in. The format is an open standard any tool can implement it.
-
 
 ---
 
@@ -101,13 +99,14 @@ An LSF file is a ZIP archive (using Deflate or Store compression) with the file 
 
 Internal Structure:
 
+```
 <filename>.lsf           ZIP archive
 ├── course.json          REQUIRED
 └── media/               OPTIONAL directory
     ├── example.jpg
     ├── solution.pdf
     └── ...
-
+```
 Rules:
 
 - course.json MUST be present at the root of the archive (not inside a subdirectory).
@@ -147,6 +146,7 @@ Apply each step in order:
 
 Worked Example:
 
+```
 institution  = "Massachusetts Institute of Technology"
 course_code  = "18.100B"
 
@@ -165,7 +165,7 @@ Step 2 (course_code):
 Step 3: "massachusetts institute of technology|18100b"
 Step 5: SHA-256("massachusetts institute of technology|18100b")
 Step 6: first 32 hex chars → (see section 14 for verified value)
-
+```
 Important Notes:
 
 - Year and semester are NOT part of the course ID. All past papers from any year belong to the same LSF file.
@@ -178,14 +178,14 @@ Important Notes:
 
 ### 5.1 Top Level
 
-{
+```
   "format_version": "1.0.0",
   "course": { },
   "papers": [ ],
   "practice_items": [ ],
   "metadata": { }
 }
-
+```
 Fields:
 
 - format_version (string, SemVer, REQUIRED): Version of the LSF spec this file conforms to. MUST be a valid SemVer string.
@@ -200,6 +200,7 @@ No other top-level fields are defined by this specification. Unknown top-level f
 
 ### 5.2 course Object
 
+```
 {
   "id": "1a79a4d60de6718e8e5b326e338ae533",
   "institution": "Massachusetts Institute of Technology",
@@ -210,7 +211,7 @@ No other top-level fields are defined by this specification. Unknown top-level f
   "exam_type": "proof_based",
   "extensions": { }
 }
-
+```
 Fields:
 
 - id (string, REQUIRED): Deterministic course identifier (section 4). MUST be exactly 32 lowercase hex characters.
@@ -228,13 +229,14 @@ Fields:
 
 Each element in course.criteria:
 
+```
 {
   "id": "rigor",
   "name": "Logical Rigor",
   "max_score": 5,
   "description": "Correctness and completeness of proofs"
 }
-
+```
 Fields:
 
 - id (string, REQUIRED): Unique key within course.criteria. MUST match the regex ^[a-z0-9_-]+$.
@@ -248,6 +250,7 @@ Uniqueness: All id values across course.criteria MUST be unique. Duplicate crite
 
 ### 5.4 Self-Assessment Object
 
+```
 {
   "obtained_marks": {
     "rigor": 4,
@@ -255,6 +258,7 @@ Uniqueness: All id values across course.criteria MUST be unique. Duplicate crite
   },
   "notes": "Forgot to justify the base case."
 }
+```
 
 Fields:
 
@@ -267,6 +271,7 @@ Constraint: Every key in obtained_marks MUST correspond to an id in course.crite
 
 ### 5.5 Answer Object
 
+```
 {
   "text": "Let $\\epsilon > 0$. Choose $\\delta = \\epsilon / 2$...",
   "media": [
@@ -278,7 +283,7 @@ Constraint: Every key in obtained_marks MUST correspond to an id in course.crite
     }
   ]
 }
-
+```
 Fields:
 
 - text (string, OPTIONAL): Typed answer. Markdown and LaTeX ($...$, $$...$$) are permitted.
@@ -301,13 +306,14 @@ Both absent: If both text and media are absent or empty, the answer object repre
 
 Used to mark an item as disputed or verified. Appears as an OPTIONAL field quality_flag on any question, paper, or practice item.
 
+```
 {
   "status": "disputed",
   "reason": "The formula in Q3 is incorrect. See Spivak p.142.",
   "flagged_by": "550e8400-e29b-41d4-a716-446655440000",
   "flagged_at": "2026-05-10T14:00:00Z"
 }
-
+```
 Fields:
 
 - status (string, REQUIRED): One of: "unreviewed", "disputed", "verified".
@@ -329,6 +335,7 @@ Merge rule: When two files contain different quality_flag values on the same ite
 
 Each element in the top-level papers array:
 
+```
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "label": "Midterm 1",
@@ -345,7 +352,7 @@ Each element in the top-level papers array:
   "quality_flag": null,
   "extensions": { }
 }
-
+```
 Fields:
 
 - id (string, UUID4, REQUIRED): Globally unique identifier for this paper. MUST be a UUID4. Generated once at creation and never changed.
@@ -371,6 +378,7 @@ Uniqueness: All id values across the papers array MUST be unique. Duplicate pape
 
 Each element in a paper.questions array:
 
+```
 {
   "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
   "label": "Q1",
@@ -386,7 +394,7 @@ Each element in a paper.questions array:
   "quality_flag": null,
   "extensions": { }
 }
-
+```
 Fields:
 
 - id (string, UUID4, REQUIRED): Globally unique identifier for this question. MUST be a UUID4. Generated once at creation and never changed.
@@ -408,6 +416,7 @@ Uniqueness: All id values across questions within a single paper MUST be unique.
 
 Practice items share all fields with a question object (section 5.8), plus:
 
+```
 {
   "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "label": "Spivak 5.12",
@@ -424,7 +433,7 @@ Practice items share all fields with a question object (section 5.8), plus:
   "quality_flag": null,
   "extensions": { }
 }
-
+```
 Additional fields beyond section 5.8:
 
 - source (string, OPTIONAL): Origin. Suggested: "textbook", "weekly_quiz", "online", "lecture_problem_set".
@@ -437,7 +446,7 @@ Uniqueness: All id values across the practice_items array MUST be unique.
 ---
 
 ### 5.10 Metadata Object
-
+```
 {
   "last_modified": "2026-05-10T14:00:00Z",
   "created_at": "2025-09-01T09:00:00Z",
@@ -447,7 +456,7 @@ Uniqueness: All id values across the practice_items array MUST be unique.
   "lineage": [ ],
   "extensions": { }
 }
-
+```
 Fields:
 
 - last_modified (string, datetime, REQUIRED): UTC datetime of last save. MUST be in YYYY-MM-DDTHH:MM:SSZ format.
@@ -463,7 +472,7 @@ Fields:
 ### 5.11 Lineage Event Object
 
 Each element in metadata.lineage:
-
+```
 {
   "event_id": "b6d5f8a2-1c3e-4f7a-9d0b-2e4c6a8b0d1f",
   "type": "create",
@@ -472,7 +481,7 @@ Each element in metadata.lineage:
   "software": "lsf-tool v0.1.0",
   "merged_sources": null
 }
-
+```
 Fields:
 
 - event_id (string, UUID4, REQUIRED): Globally unique identifier for this event. Used for deduplication during merge.
@@ -502,14 +511,14 @@ Rules for All Implementations:
 Namespacing Convention:
 
 Extension keys SHOULD be namespaced to avoid collisions:
-
+```
 "extensions": {
   "com.example.mytool": {
     "spaced_repetition_due": "2026-06-01",
     "ease_factor": 2.5
   }
 }
-
+```
 The RECOMMENDED format for namespace keys is reverse-domain notation. Tools MAY use any string key, but SHOULD namespace to prevent collisions with future spec fields.
 
 Extension Profiles:
@@ -528,9 +537,9 @@ Community-defined extension profiles (documents describing agreed-upon extension
 Content-Addressed Deduplication (RECOMMENDED):
 
 To avoid storing the same file multiple times across merged versions, compliant writers SHOULD use the following naming convention:
-
+```
 media/<sha256-prefix>-<original-name>
-
+```
 Where <sha256-prefix> is the first 16 hex characters of the SHA-256 hash of the file's byte content. This ensures that identical files receive identical paths, and a merge that encounters duplicate paths with identical content can safely keep one copy.
 
 Implementations that do not use content-addressed names MUST NOT rename existing media/ files during a merge without updating all references in course.json.
@@ -779,231 +788,28 @@ The following are warnings. A compliant reader SHOULD surface these to the user 
 
 ---
 
-## 14. Test Vectors
+## 14. Conformance Test Vectors
 
-Implementors MUST verify their course ID algorithm against these vectors. All produce a deterministic SHA-256; the first 32 hex characters are the expected course.id.
+A set of normative test vectors is provided in the file (TBA).  
+Implementors **MUST** validate their implementations against these vectors to ensure correctness of the course ID generation and other normative algorithms.
 
-Vector 1
+The test vectors cover:
 
-Input:
-  institution = "Massachusetts Institute of Technology"
-  course_code  = "18.100B"
-
-Normalization:
-  institution → "massachusetts institute of technology"
-  course_code → "18100b"
-
-Concatenated: "massachusetts institute of technology|18100b"
-
-SHA-256: 8b9a1f2e4c6d0b3a7e5c9d1f3b5a7e2c4d6f8a0b2e4c6d8f0a2b4c6d8e0f2a4b
-course.id: "8b9a1f2e4c6d0b3a7e5c9d1f3b5a7e2c"
-
-Note: The SHA-256 value above is illustrative. The authoritative test vectors, with computed-and-verified SHA-256 values, are published in the repository as test-vectors.json. Implementors MUST use the repository values, not the values in this document, as the normative reference. This document will be updated when the repository vectors are finalised.
-
-Vector 2 — Whitespace and case normalisation
-
-Input:
-  institution = "  MIT  "
-  course_code  = "  18.100b  "
-
-Normalization:
-  institution → "mit"
-  course_code → "18100b"
-
-Concatenated: "mit|18100b"
-
-Note: this produces a DIFFERENT course.id from Vector 1, because "MIT" and "Massachusetts Institute of Technology" normalize differently. Users entering different institution strings for the same school will get different IDs. Tools SHOULD prompt users to use their institution's full official name.
-
-Vector 3 — Unicode institution name
-
-Input:
-  institution = "Université de Paris"
-  course_code  = "MATH-201"
-
-Normalization:
-  institution → "universit de paris" (é removed, non-ASCII)
-  course_code → "math-201" (hyphen preserved)
-
-Concatenated: "universit de paris|math-201"
+- Normalization of institution and course code strings.
+- Generation of the deterministic SHA-256 hash.
+- Edge cases (whitespace, Unicode, special characters, etc.).
 
 ---
 
-## 15. Complete Example
+## 15. Example
 
-Archive Layout:
-
-RealAnalysis.lsf
-├── course.json
-└── media/
-    ├── proof1.jpg
-    └── midterm_solutions.pdf
-
-course.json:
-
-{
-  "format_version": "1.0.0",
-  "course": {
-    "id": "8b9a1f2e4c6d0b3a7e5c9d1f3b5a7e2c",
-    "institution": "Massachusetts Institute of Technology",
-    "course_code": "18.100B",
-    "course_name": "Real Analysis",
-    "curriculum_version": "2024-2025",
-    "criteria": [
-      {
-        "id": "rigor",
-        "name": "Logical Rigor",
-        "max_score": 5,
-        "description": "Correctness and completeness of proofs"
-      },
-      {
-        "id": "clarity",
-        "name": "Clarity",
-        "max_score": 5,
-        "description": "Clear and well-structured mathematical writing"
-      }
-    ],
-    "exam_type": "proof_based",
-    "extensions": {}
-  },
-  "papers": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "label": "Midterm 1",
-      "title": "Midterm Examination 1",
-      "date": "2025-03-15",
-      "academic_year": "2024-2025",
-      "term": "Spring",
-      "total_time_minutes": 90,
-      "source": "official_exam",
-      "author_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "imported_from": null,
-      "reflection": "Struggled with uniform convergence in Q3. Revisit.",
-      "quality_flag": null,
-      "questions": [
-        {
-          "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-          "label": "Q1",
-          "topic_tags": ["continuity", "epsilon-delta"],
-          "difficulty": 2,
-          "question_text": "Prove that $f(x) = x^2$ is continuous at $x = 2$.",
-          "hints": [
-            "Write out the $\\epsilon$-$\\delta$ definition of continuity.",
-            "Factor $|x^2 - 4| = |x-2||x+2|$ and bound $|x+2|$."
-          ],
-          "student_answer": {
-            "text": "Let $\\epsilon > 0$. We need $\\delta > 0$ such that...",
-            "media": [
-              {
-                "path": "media/proof1.jpg",
-                "mime_type": "image/jpeg",
-                "description": "Scanned handwritten proof",
-                "available": true
-              }
-            ]
-          },
-          "self_assessment": {
-            "obtained_marks": {
-              "rigor": 4,
-              "clarity": 5
-            },
-            "notes": "Clean proof but I should have bounded |x+2| more carefully."
-          },
-          "quality_flag": null,
-          "extensions": {}
-        },
-        {
-          "id": "3f4a5b6c-7d8e-9f0a-1b2c-3d4e5f6a7b8c",
-          "label": "Q2",
-          "topic_tags": ["uniform-convergence"],
-          "difficulty": 4,
-          "question_text": "Prove or disprove: $f_n(x) = x^n$ converges uniformly on $[0,1]$.",
-          "hints": [],
-          "student_answer": {
-            "text": "The sequence does not converge uniformly...",
-            "media": []
-          },
-          "self_assessment": {
-            "obtained_marks": {
-              "rigor": 2,
-              "clarity": 3
-            },
-            "notes": "Got the conclusion right but the proof was incomplete."
-          },
-          "quality_flag": {
-            "status": "disputed",
-            "reason": "My proof of the pointwise limit is wrong at x=1. The limit is 1, not 0.",
-            "flagged_by": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-            "flagged_at": "2026-05-10T14:00:00Z"
-          },
-          "extensions": {}
-        }
-      ],
-      "extensions": {}
-    }
-  ],
-  "practice_items": [
-    {
-      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      "label": "Spivak 5.12",
-      "source": "textbook",
-      "source_detail": "Spivak, Calculus, 4th ed., Chapter 5, Problem 12",
-      "date_added": "2025-04-01",
-      "author_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "topic_tags": ["integration", "riemann-sums"],
-      "difficulty": 3,
-      "question_text": "Prove that every bounded monotone function on $[a,b]$ is Riemann integrable.",
-      "hints": [
-        "Partition $[a,b]$ into $n$ equal subintervals.",
-        "Bound the difference of upper and lower Riemann sums."
-      ],
-      "student_answer": {
-        "text": "Let $f$ be bounded and increasing on $[a,b]$...",
-        "media": []
-      },
-      "self_assessment": {
-        "obtained_marks": {
-          "rigor": 5,
-          "clarity": 4
-        },
-        "notes": "Happy with this one."
-      },
-      "quality_flag": null,
-      "extensions": {}
-    }
-  ],
-  "metadata": {
-    "last_modified": "2026-05-10T14:00:00Z",
-    "created_at": "2025-09-01T09:00:00Z",
-    "software": "lsf-tool v0.1.0",
-    "created_by": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "signature": null,
-    "lineage": [
-      {
-        "event_id": "b6d5f8a2-1c3e-4f7a-9d0b-2e4c6a8b0d1f",
-        "type": "create",
-        "by": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-        "at": "2025-09-01T09:00:00Z",
-        "software": "lsf-tool v0.1.0",
-        "merged_sources": null
-      },
-      {
-        "event_id": "c7e6f9b3-2d4f-5a8b-0e1c-3f5a7b9c1e2d",
-        "type": "edit",
-        "by": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-        "at": "2026-05-10T14:00:00Z",
-        "software": "lsf-tool v0.1.0",
-        "merged_sources": null
-      }
-    ],
-    "extensions": {}
-  }
-}
+Please refer to examples/ for a full list of examples
 
 ---
 
 ## 16. Changelog
 
-1.0.0 — Initial Release
+1.0.0 Release
 
 - First public release of the LSF specification.
 - Defines ZIP+JSON container format.
