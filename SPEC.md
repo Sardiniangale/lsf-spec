@@ -2,8 +2,11 @@
 ## Version 1.0.0
 
 Status: Alpha
+
 License: MIT License
+
 Repository pre-release: https://git.dyno.cx/Sardiniangale/Lightweight_Study_Format
+
 Repository full-release: https://github.com/Sardiniangale/lsf-spec
 
 ---
@@ -79,14 +82,16 @@ Term: UUID4
 
 LSF is built on the following principles, listed in priority order. When principles conflict, earlier ones take precedence.
 
-1. Self-contained — One file holds everything: metadata, questions, answers, self-assessments, and media. No external references are required to read or use the file.
-2. Offline & private — No server, no account, no API key. All data stays local. The format does not and will not require network access for any core function.
-3. Human-readable at its core — JSON backbone. Any text editor can open course.json after unzipping. Field names are English words, not codes.
-4. Content-agnostic — Works for any subject with a rubric: mathematics, history, chemistry, programming, languages, law, and beyond.
-5. Merge-friendly — Multiple people can independently work on the same course and combine their files later. Merging is user-controlled; nothing is silently overwritten.
-6. Backward-compatible — A stable format_version with clear SemVer rules. Parsers MUST preserve unknown fields. See section 11.
-7. Portable — A standard ZIP archive with no OS-specific paths, no symlinks, no extended attributes. Runs on any platform that can open a ZIP file.
-8. No proprietary lock-in — An open standard under MIT License. Any tool can implement it without permission or fees.
+
+- Self contained. All metadata pdf's ect ect must be all contained within a single .lsf
+- Offline. There is zero need for communication to any external server for file authenticity 
+- Human readable. The entire backbone is written in JSON, it must be easily inspectable in any text editor
+- Content agnostic. It needs to be able to work for any subject with a marking rubric
+- Merge friendly. It needs to be able to work with multiple people such that they can all independently work on the same course at the same/similar time. User controlled merging at its core
+- Backward compatible. A stable format_version with clear SemVer rules; implementations must preserve unknown fields.
+- Portable. Its a standard ZIP archive renameable to .lsf, with zero OS specific paths.
+- No proprietary lock in. The format is an open standard any tool can implement it.
+
 
 ---
 
