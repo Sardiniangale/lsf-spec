@@ -74,13 +74,13 @@ Term: compliant reader
   Definition: A tool that consumes LSF files conforming to section 12.2.
 
 Term: UUID4
-  Definition: A randomly generated UUID per RFC 4122 section 4.4 (https://www.rfc-editor.org/rfc/rfc4122#section-4.4), represented as a lowercase hyphenated string (e.g., 550e8400-e29b-41d4-a716-446655440000).
+  Definition: A randomly generated UUID per RFC 4122 section 4.4 (https://www.rfc-editor.org/rfc/rfc4122#section-4.4), represented as a lowercase hyphenated string (e.g 550e8400-e29b-41d4-a716-446655440000).
 
 ---
 
 ## 2. Philosophy & Goals
 
-LSF is built on the following principles, listed in priority order. When principles conflict, earlier ones take precedence.
+LSF is built on the following principles, listed in priority order.
 
 - Self contained. All metadata pdf's ect ect must be all contained within a single .lsf
 - Offline. There is zero need for communication to any external server for file authenticity
@@ -113,14 +113,14 @@ Rules:
 - course.json MUST be encoded as UTF-8 without a BOM.
 - All paths inside the archive MUST use forward slashes (/) as separators. Backslashes are not permitted.
 - The media/ directory is OPTIONAL. It MUST be named exactly media (lowercase).
-- Files inside media/ MUST be referenced by their relative path from the archive root (e.g., media/scan.jpg).
+- Files inside media/ MUST be referenced by their relative path from the archive root (e.g  media/scan.jpg).
 - No symlinks, hard links, or executable bits are permitted inside the archive.
-- Additional files or directories outside media/ (e.g., .git, __MACOSX) MUST be ignored by compliant readers and MUST NOT be written by compliant writers.
+- Additional files or directories outside media/ (e.g  .git, __MACOSX) MUST be ignored by compliant readers and MUST NOT be written by compliant writers.
 - The archive MUST NOT contain encrypted ZIP entries.
 
 File Naming:
 
-The RECOMMENDED default filename is {Institution}_{CourseCode}.lsf (e.g., MIT_18.100B.lsf). The extension MUST be .lsf. Tools MAY allow users to choose any filename.
+The RECOMMENDED default filename is {Institution}_{CourseCode}.lsf (e.g MIT_18.100B.lsf). The extension MUST be .lsf. Tools MAY allow users to choose any filename.
 
 ---
 
@@ -216,7 +216,7 @@ Fields:
 
 - id (string, REQUIRED): Deterministic course identifier (section 4). MUST be exactly 32 lowercase hex characters.
 - institution (string, REQUIRED): Full institution name as entered by the user. MUST NOT be empty.
-- course_code (string, REQUIRED): Official course code (e.g., "18.100B"). MUST NOT be empty.
+- course_code (string, REQUIRED): Official course code (e.g  "18.100B"). MUST NOT be empty.
 - course_name (string, REQUIRED): Human-readable course name. MUST NOT be empty.
 - curriculum_version (string, OPTIONAL): Free-form syllabus or curriculum identifier. Used for merge warnings (section 9.5).
 - criteria (array, REQUIRED): Grading rubric (section 5.3). MUST contain at least one criterion.
@@ -284,17 +284,18 @@ Constraint: Every key in obtained_marks MUST correspond to an id in course.crite
   ]
 }
 ```
+
 Fields:
 
-- text (string, OPTIONAL): Typed answer. Markdown and LaTeX ($...$, $$...$$) are permitted.
+- text (string, OPTIONAL): Typed answer. Markdown and LaTeX ``($...$, $$...$$)`` are permitted.
 - media (array, OPTIONAL): List of attached files. MAY be empty or absent.
 
 Each entry in media:
 
 - path (string, REQUIRED): Relative path from archive root. MUST start with media/.
-- mime_type (string, REQUIRED): IANA media type (e.g., "image/jpeg", "application/pdf").
+- mime_type (string, REQUIRED): IANA media type (e.g "image/jpeg", "application/pdf").
 - description (string, OPTIONAL): Human-readable description of the attached file.
-- available (boolean, OPTIONAL): If false, the file was intentionally stripped (e.g., for privacy or size). Readers MUST NOT treat a missing file as a parse error when available is false. Defaults to true when absent.
+- available (boolean, OPTIONAL): If false, the file was intentionally stripped (e.g  for privacy or size). Readers MUST NOT treat a missing file as a parse error when available is false. Defaults to true when absent.
 
 Constraint: Referenced media/ paths MUST point to a file that exists inside the ZIP, unless available is explicitly false.
 
@@ -323,9 +324,9 @@ Fields:
 
 Status semantics:
 
-- "unreviewed" — Default. No flag has been deliberately set. Absence of quality_flag is equivalent to "unreviewed".
-- "disputed" — The flagger believes this content contains an error. Tools MUST display a visible warning to the user when rendering disputed items.
-- "verified" — The flagger has checked this content and believes it is correct.
+- "unreviewed": Default. No flag has been deliberately set. Absence of quality_flag is equivalent to "unreviewed".
+- "disputed": The flagger believes this content contains an error. Tools MUST display a visible warning to the user when rendering disputed items.
+- "verified": The flagger has checked this content and believes it is correct.
 
 Merge rule: When two files contain different quality_flag values on the same item, the user MUST be shown both and asked to choose. A tool MUST NOT silently resolve a flag conflict.
 
@@ -356,11 +357,11 @@ Each element in the top-level papers array:
 Fields:
 
 - id (string, UUID4, REQUIRED): Globally unique identifier for this paper. MUST be a UUID4. Generated once at creation and never changed.
-- label (string, OPTIONAL): Short display label (e.g., "Midterm 1"). Used by tools as the primary display name.
+- label (string, OPTIONAL): Short display label (e.g  "Midterm 1"). Used by tools as the primary display name.
 - title (string, REQUIRED): Full title of the exam or paper.
 - date (string, REQUIRED): Date the exam was taken. MUST be in YYYY-MM-DD format.
-- academic_year (string, OPTIONAL): e.g., "2024-2025".
-- term (string, OPTIONAL): e.g., "Spring", "Fall", "Semester 1".
+- academic_year (string, OPTIONAL): e.g  "2024-2025".
+- term (string, OPTIONAL): e.g  "Spring", "Fall", "Semester 1".
 - total_time_minutes (number, OPTIONAL): Duration of the exam in minutes. MUST be a positive integer if present.
 - questions (array, REQUIRED): List of question objects (section 5.8). MAY be empty.
 - reflection (string, OPTIONAL): Free-form post-exam notes.
@@ -398,7 +399,7 @@ Each element in a paper.questions array:
 Fields:
 
 - id (string, UUID4, REQUIRED): Globally unique identifier for this question. MUST be a UUID4. Generated once at creation and never changed.
-- label (string, OPTIONAL): Display label (e.g., "Q1", "Question 3b"). If absent, tools MAY display a truncated id.
+- label (string, OPTIONAL): Display label (e.g  "Q1", "Question 3b"). If absent, tools MAY display a truncated id.
 - topic_tags (array of strings, OPTIONAL): Labels for filtering and organisation. Each tag MUST be a non-empty string.
 - difficulty (number, OPTIONAL): Difficulty rating. RECOMMENDED range is 1–5. Tools MUST accept values outside this range.
 - question_text (string, REQUIRED): The question itself. Markdown and LaTeX are permitted. MUST NOT be empty.
@@ -463,7 +464,7 @@ Fields:
 - created_at (string, datetime, OPTIONAL): UTC datetime the file was first created. MUST be in YYYY-MM-DDTHH:MM:SSZ format if present.
 - software (string, OPTIONAL): Name and version of the tool that last saved the file.
 - created_by (string, UUID4, OPTIONAL): author_id of the original creator of this file.
-- signature (string or null, OPTIONAL): Reserved for digital signatures (e.g., base64-encoded PGP detached signature). null if unused.
+- signature (string or null, OPTIONAL): Reserved for digital signatures (e.g  base64-encoded PGP detached signature). null if unused.
 - lineage (array, REQUIRED): Ordered list of provenance events (section 5.11). MAY be empty. MUST NOT be absent.
 - extensions (object, OPTIONAL): See section 6.
 
@@ -530,7 +531,7 @@ Community-defined extension profiles (documents describing agreed-upon extension
 ## 7. Media Handling
 
 - All binary or large files MUST be stored in the media/ directory inside the ZIP archive.
-- References to media in course.json use forward-slash relative paths starting with media/ (e.g., media/scan.jpg).
+- References to media in course.json use forward-slash relative paths starting with media/ (e.g  media/scan.jpg).
 - Media filenames MUST NOT contain path separators (i.e., no / or \ within the filename itself).
 - Filenames SHOULD be lowercase ASCII with hyphens or underscores, to maximise cross-platform compatibility. Unicode filenames are permitted but SHOULD be avoided.
 
@@ -546,7 +547,7 @@ Implementations that do not use content-addressed names MUST NOT rename existing
 
 Stripped Media:
 
-When a user intentionally removes media files before sharing (e.g., for privacy or to reduce file size), all references in course.json MUST be updated to set "available": false on the affected media entries. Tools MUST NOT treat a missing file as a parse error when available is false. Tools SHOULD display a clear indicator that media is unavailable.
+When a user intentionally removes media files before sharing (e.g  for privacy or to reduce file size), all references in course.json MUST be updated to set "available": false on the affected media entries. Tools MUST NOT treat a missing file as a parse error when available is false. Tools SHOULD display a clear indicator that media is unavailable.
 
 ---
 
@@ -790,7 +791,7 @@ The following are warnings. A compliant reader SHOULD surface these to the user 
 
 ## 14. Conformance Test Vectors
 
-A set of normative test vectors is provided in the file (TBA).  
+A set of normative test vectors is provided in the file `test`.
 Implementors **MUST** validate their implementations against these vectors to ensure correctness of the course ID generation and other normative algorithms.
 
 The test vectors cover:
@@ -803,7 +804,7 @@ The test vectors cover:
 
 ## 15. Example
 
-Please refer to examples/ for a full list of examples
+Please refer to `examples/README.md` for a full list of examples and info and instructions regarding thoes examples.  
 
 ---
 
