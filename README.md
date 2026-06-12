@@ -29,4 +29,4 @@ Status: BETA, specification complete, tests and examples in progress.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+MIT License, see [LICENSE](LICENSE).
