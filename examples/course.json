@@ -1,0 +1,256 @@
+{
+  "format_version": "1.0.0",
+  "course": {
+    "id": "40f559945e0fe13c82a1339e7a12c7fd",
+    "institution": "Massachusetts Institute of Technology",
+    "course_code": "18.100B",
+    "course_name": "Real Analysis",
+    "curriculum_version": "2024-2025",
+    "criteria": [
+      {
+        "id": "rigor",
+        "name": "Logical Rigor",
+        "max_score": 5,
+        "description": "Correctness and completeness of proofs. Are all steps justified?",
+        "extensions": {}
+      },
+      {
+        "id": "clarity",
+        "name": "Clarity",
+        "max_score": 3,
+        "description": "Structure and readability of the argument.",
+        "extensions": {}
+      },
+      {
+        "id": "notation",
+        "name": "Notation",
+        "max_score": 2,
+        "description": "Correct and consistent mathematical notation.",
+        "extensions": {}
+      }
+    ],
+    "exam_type": "proof_based",
+    "extensions": {}
+  },
+  "papers": [
+    {
+      "id": "86f17b5e-33ce-4782-a11a-c75502b1b6cf",
+      "label": "Midterm 1",
+      "title": "Midterm 1 — Sequences and Limits",
+      "date": "2025-03-15",
+      "academic_year": "2024-2025",
+      "term": "Spring",
+      "total_time_minutes": 90,
+      "questions": [
+        {
+          "id": "dd1ea60e-c5f1-4fd5-8c84-2cb19d98eb85",
+          "label": "Q1",
+          "topic_tags": ["limits", "epsilon-delta"],
+          "difficulty": 3,
+          "question_text": "Prove that $f(x) = x^2$ is continuous at $x = 2$ using the $\\epsilon$-$\\delta$ definition.",
+          "hints": [
+            "Start by writing the definition of continuity at a point.",
+            "Factor $|x^2 - 4| = |x-2||x+2|$ and bound $|x+2|$ near $x=2$."
+          ],
+          "student_answer": {
+            "text": "Let $\\epsilon > 0$. Choose $\\delta = \\min(1, \\epsilon/5)$. If $|x-2| < \\delta$, then $|x-2| < 1$ implies $|x+2| < 5$. Hence $|x^2 - 4| = |x-2||x+2| < \\delta \\cdot 5 \\leq \\epsilon$.",
+            "media": [
+              {
+                "path": "media/midterm1_q1_scan.jpg",
+                "mime_type": "image/jpeg",
+                "description": "Scanned handwritten proof with margin notes",
+                "available": true,
+                "extensions": {}
+              }
+            ],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 4,
+              "clarity": 3,
+              "notation": 2
+            },
+            "notes": "Missed the justification for bounding |x+2|. Should have explicitly stated the restriction to a neighbourhood of radius 1.",
+            "extensions": {}
+          },
+          "quality_flag": null,
+          "extensions": {}
+        },
+        {
+          "id": "0fffd16b-1b25-4cac-93da-65a69c852a89",
+          "label": "Q2",
+          "topic_tags": ["sequences", "convergence"],
+          "difficulty": 4,
+          "question_text": "Let $(a_n)$ be a sequence defined by $a_1 = 1$ and $a_{n+1} = \\sqrt{2 + a_n}$. Prove that $(a_n)$ converges and find its limit.",
+          "hints": [
+            "First prove the sequence is bounded above by 2.",
+            "Show monotonicity by induction.",
+            "Apply the Monotone Convergence Theorem."
+          ],
+          "student_answer": {
+            "text": "Proof of boundedness: $a_1 = 1 < 2$. Assume $a_n < 2$. Then $a_{n+1} = \\sqrt{2 + a_n} < \\sqrt{2 + 2} = 2$. By induction, $a_n < 2$ for all $n$. Proof of monotonicity: $a_2 = \\sqrt{3} > 1 = a_1$. Assume $a_{n+1} > a_n$. Then $a_{n+2} = \\sqrt{2 + a_{n+1}} > \\sqrt{2 + a_n} = a_{n+1}$ since $\\sqrt{\\cdot}$ is strictly increasing. By MCT, $(a_n)$ converges. Let $L = \\lim a_n$. Then $L = \\sqrt{2 + L} \\implies L^2 - L - 2 = 0 \\implies L = 2$ (rejecting $L = -1$ since all terms are positive).",
+            "media": [],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 5,
+              "clarity": 3,
+              "notation": 2
+            },
+            "notes": "Full solution. Checked against the mark scheme — all steps present.",
+            "extensions": {}
+          },
+          "quality_flag": {
+            "status": "verified",
+            "reason": "Cross-referenced with official solutions. The proof is complete and correct.",
+            "flagged_by": "973fe473-5476-47de-931e-dce901f39dd4",
+            "flagged_at": "2025-03-18T10:30:00Z",
+            "extensions": {}
+          },
+          "extensions": {}
+        }
+      ],
+      "reflection": "Q1 was straightforward but I rushed the bound justification. Q2 was solid — the monotonicity induction is clean.",
+      "source": "official_exam",
+      "author_id": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+      "imported_from": null,
+      "quality_flag": null,
+      "extensions": {}
+    }
+  ],
+  "practice_items": [
+    {
+      "id": "395f985c-1d0b-41d4-b9b9-57c148ff9a70",
+      "label": "Spivak 5.12",
+      "source": "textbook",
+      "source_detail": "Spivak, Calculus, 4th ed., Chapter 5, Problem 12",
+      "date_added": "2025-04-01",
+      "author_id": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+      "topic_tags": ["limits", "epsilon-delta", "quadratic"],
+      "difficulty": 3,
+      "question_text": "Prove that $\\lim_{x \\to a} x^2 = a^2$ for any real $a$ using the $\\epsilon$-$\\delta$ definition.",
+      "student_answer": {
+        "text": "",
+        "media": [
+          {
+            "path": "media/spivak_5_12_solution.pdf",
+            "mime_type": "application/pdf",
+            "description": "Full solution with diagram",
+            "available": true,
+            "extensions": {}
+          }
+        ],
+        "extensions": {}
+      },
+      "hints": [
+        "Consider the cases $|x-a| < 1$ and $|x-a| \\geq 1$ separately.",
+        "The bound on $|x+a|$ depends on $|x-a|$ being small."
+      ],
+      "self_assessment": {
+        "obtained_marks": {
+          "rigor": 3,
+          "clarity": 2,
+          "notation": 2
+        },
+        "notes": "Got the idea right but the casework was messy. Need to clean up the structure.",
+        "extensions": {}
+      },
+      "quality_flag": null,
+      "extensions": {}
+    },
+    {
+      "id": "7fe63ae5-1713-4ebd-9a99-10758a4d195e",
+      "label": "Uniform Convergence Drill",
+      "source": "lecture_problem_set",
+      "source_detail": "Problem Set 6, Question 4",
+      "date_added": "2025-04-10",
+      "author_id": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+      "topic_tags": ["uniform-convergence", "sequences-of-functions"],
+      "difficulty": 5,
+      "question_text": "Let $f_n(x) = \\frac{x}{1 + nx^2}$ for $x \\in \\mathbb{R}$. Determine whether $(f_n)$ converges uniformly on $\\mathbb{R}$.",
+      "student_answer": {
+        "text": "First find the pointwise limit. For fixed $x \\neq 0$, $f_n(x) \\to 0$ as $n \\to \\infty$. For $x = 0$, $f_n(0) = 0$. So $f(x) = 0$ pointwise. Compute $\\sup_{x \\in \\mathbb{R}} |f_n(x)|$. The derivative $f_n'(x) = \\frac{1 - nx^2}{(1 + nx^2)^2}$ vanishes at $x = \\pm 1/\\sqrt{n}$. Evaluating: $|f_n(\\pm 1/\\sqrt{n})| = \\frac{1}{2\\sqrt{n}} \\to 0$. Hence $\\sup |f_n| \\to 0$, so convergence is uniform.",
+        "media": [],
+        "extensions": {}
+      },
+      "hints": [
+        "Find the pointwise limit first — it should be the zero function.",
+        "Compute $\\sup_{x \\in \\mathbb{R}} |f_n(x) - 0|$ by finding critical points of $f_n$."
+      ],
+      "self_assessment": {
+        "obtained_marks": {
+          "rigor": 5,
+          "clarity": 2,
+          "notation": 1
+        },
+        "notes": "The proof is correct but the write-up is messy. Lost marks on notation for not stating the supremum norm explicitly.",
+        "extensions": {}
+      },
+      "quality_flag": {
+        "status": "disputed",
+        "reason": "Missing the case where the supremum is attained — should mention Weierstrass M-test does not apply directly here.",
+        "flagged_by": "973fe473-5476-47de-931e-dce901f39dd4",
+        "flagged_at": "2025-04-12T16:45:00Z",
+        "extensions": {}
+      },
+      "extensions": {}
+    }
+  ],
+  "metadata": {
+    "last_modified": "2025-05-10T14:00:00Z",
+    "created_at": "2025-02-01T09:00:00Z",
+    "software": "lsf-tool v0.1.0",
+    "created_by": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+    "signature": null,
+    "lineage": [
+      {
+        "event_id": "826cf286-a4fd-4ba6-988f-a654e36688ff",
+        "type": "create",
+        "by": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+        "at": "2025-02-01T09:00:00Z",
+        "software": "lsf-tool v0.1.0",
+        "merged_sources": null,
+        "extensions": {}
+      },
+      {
+        "event_id": "675fad08-fc7f-499a-8f2e-237f232cedbd",
+        "type": "edit",
+        "by": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+        "at": "2025-03-16T11:00:00Z",
+        "software": "lsf-tool v0.1.0",
+        "merged_sources": null,
+        "extensions": {}
+      },
+      {
+        "event_id": "4fe46488-4cdb-40a4-b295-ab40f0d986f5",
+        "type": "edit",
+        "by": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+        "at": "2025-04-01T14:30:00Z",
+        "software": "lsf-tool v0.1.0",
+        "merged_sources": null,
+        "extensions": {}
+      },
+      {
+        "event_id": "bee781ae-6866-4d03-a3f6-2e5a0d7896b2",
+        "type": "merge",
+        "by": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+        "at": "2025-04-15T20:00:00Z",
+        "software": "lsf-tool v0.1.0",
+        "merged_sources": ["973fe473-5476-47de-931e-dce901f39dd4"],
+        "extensions": {}
+      },
+      {
+        "event_id": "e244462a-5940-4c2f-974a-f3539abdd9d9",
+        "type": "edit",
+        "by": "2a6b94ae-4cf5-4239-baa8-2382f74fa692",
+        "at": "2025-05-10T14:00:00Z",
+        "software": "lsf-tool v0.1.0",
+        "merged_sources": null,
+        "extensions": {}
+      }
+    ],
+    "extensions": {}
+  }
+}

@@ -1,20 +1,32 @@
-# The .lsf standard
+# LSF: Lightweight Study Format
 
-It is currently in the very early testing phase. I want to hit these design standards
+A self-contained, offline-first file format for storing and sharing marked coursework with grading rubrics.
 
-- Self contained. All metadata pdf's ect ect must be all contained within a single .lsf
-- Offline. There is zero need for communication to any external server for file authenticity 
-- Human readable. The entire backbone is written in JSON, it must be easily inspectable in any text editor
-- Content agnostic. It needs to be able to work for any subject with a marking rubric
-- Merge friendly. It needs to be able to work with multiple people such that they can all independently work on the same course at the same/similar time. User controlled merging at its core
-- Backward compatible. A stable format_version with clear SemVer rules; implementations must preserve unknown fields.
-- Portable. Its a standard ZIP archive renameable to .lsf, with zero OS specific paths.
-- No proprietary lock in. The format is an open standard any tool can implement it.
+Status: BETA, specification complete, tests and examples in progress.
 
----
+## Design Goals
 
-This first Pre-release iteration is just for initial prototyping and testing, but its almost ready. 
+- Self contained. All metadata, media, and course data live inside a single `.lsf` file.
+- Offline. No external server communication needed for file authenticity.
+- Human readable. The backbone is JSON, inspectable in any text editor.
+- Content agnostic. Works for any subject with a marking rubric.
+- Merge friendly. Multiple people can work independently on the same course and merge their files.
+- Backward compatible. Stable `format_version` with clear SemVer rules; implementations MUST preserve unknown fields.
+- Portable. A standard ZIP archive with the `.lsf` extension, zero OS-specific paths.
+- No proprietary lock-in. An open standard any tool can implement.
 
----
+## Quick Links
 
-Im primarily designing this so I can implement it into another oss study app later on. But I figured I might as well make the standard open and public while I am at it. I will write a base design doc very soon (within week) and it will also be availible on github as well, however this is just where I can mess around before making public.
+- [SPEC.md](SPEC.md): Full specification (v1.0.0)
+- [examples/](examples/): Complete example `.lsf` file
+- [tests/](tests/): Conformance test vectors
+- [schemas/](schemas/): JSON Schema for `course.json`
+
+## Repository
+
+- Pre-release: https://git.dyno.cx/Sardiniangale/Lightweight_Study_Format
+- Full release (GitHub): https://github.com/Sardiniangale/lsf-spec
+
+## License
+
+MIT License — see [LICENSE](LICENSE).

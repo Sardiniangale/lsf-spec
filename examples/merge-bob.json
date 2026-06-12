@@ -1,0 +1,244 @@
+{
+  "format_version": "1.0.0",
+  "course": {
+    "id": "40f559945e0fe13c82a1339e7a12c7fd",
+    "institution": "Massachusetts Institute of Technology",
+    "course_code": "18.100B",
+    "course_name": "Real Analysis",
+    "curriculum_version": "2023-2024",
+    "criteria": [
+      {
+        "id": "rigor",
+        "name": "Logical Rigor",
+        "max_score": 5,
+        "description": "Correctness and completeness of proofs.",
+        "extensions": {}
+      },
+      {
+        "id": "clarity",
+        "name": "Clarity",
+        "max_score": 3,
+        "description": "Structure and readability of the argument.",
+        "extensions": {}
+      }
+    ],
+    "exam_type": "proof_based",
+    "extensions": {}
+  },
+  "papers": [
+    {
+      "id": "a1a1a1a1-a1a1-4a1a-8a1a-a1a1a1a1a1a1",
+      "label": "Midterm 1",
+      "title": "Midterm 1 — Sequences and Limits",
+      "date": "2025-03-15",
+      "academic_year": "2024-2025",
+      "term": "Spring",
+      "total_time_minutes": 90,
+      "questions": [
+        {
+          "id": "b1b1b1b1-b1b1-4b1b-8b1b-b1b1b1b1b1b1",
+          "label": "Q1",
+          "topic_tags": ["limits", "epsilon-delta"],
+          "difficulty": 3,
+          "question_text": "Prove that $f(x) = x^2$ is continuous at $x = 2$.",
+          "hints": [
+            "Start by writing the definition of continuity at a point."
+          ],
+          "student_answer": {
+            "text": "BOB'S ANSWER: Let $\\epsilon > 0$. Set $\\delta = \\epsilon/5$ directly since $|x+2| \\leq 5$ near $x=2$.",
+            "media": [],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 5,
+              "clarity": 3
+            },
+            "notes": "Bob: cleaner bound than Alice's version.",
+            "extensions": {}
+          },
+          "quality_flag": null,
+          "extensions": {}
+        },
+        {
+          "id": "c1c1c1c1-c1c1-4c1c-8c1c-c1c1c1c1c1c1",
+          "label": "Q2",
+          "topic_tags": ["sequences", "convergence"],
+          "difficulty": 4,
+          "question_text": "Let $(a_n)$ be defined by $a_1 = 1$, $a_{n+1} = \\sqrt{2 + a_n}$. Prove convergence.",
+          "student_answer": {
+            "text": "BOB'S ANSWER: Bounded by 2, monotonic, limit is 2.",
+            "media": [],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 5,
+              "clarity": 3
+            },
+            "notes": "Bob also checked against the mark scheme.",
+            "extensions": {}
+          },
+          "quality_flag": {
+            "status": "disputed",
+            "reason": "Bob thinks the monotonicity step is incomplete — needs an explicit induction hypothesis.",
+            "flagged_by": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+            "flagged_at": "2025-03-20T14:00:00Z",
+            "extensions": {}
+          },
+          "extensions": {}
+        },
+        {
+          "id": "f1f1f1f1-f1f1-4f1f-8f1f-f1f1f1f1f1f1",
+          "label": "Q3",
+          "topic_tags": ["cauchy-sequences"],
+          "difficulty": 5,
+          "question_text": "Prove that every Cauchy sequence in $\\mathbb{R}$ is bounded.",
+          "student_answer": {
+            "text": "BOB'S ANSWER: Pick $\\epsilon = 1$, get $N$ such that $m,n \\geq N \\implies |a_m - a_n| < 1$.",
+            "media": [],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 4,
+              "clarity": 2
+            },
+            "notes": "Bob: proof works but could be structured better.",
+            "extensions": {}
+          },
+          "quality_flag": null,
+          "extensions": {}
+        }
+      ],
+      "reflection": "Bob: Q3 was harder than expected.",
+      "source": "official_exam",
+      "author_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      "imported_from": null,
+      "quality_flag": null,
+      "extensions": {}
+    },
+    {
+      "id": "d99243aa-c209-417a-a131-d3d1bfbcb0db",
+      "label": "Final Exam",
+      "title": "Final Exam — Full Course",
+      "date": "2025-05-20",
+      "academic_year": "2024-2025",
+      "term": "Spring",
+      "total_time_minutes": 180,
+      "questions": [
+        {
+          "id": "accc5988-95b8-471c-8965-b6327d84b096",
+          "label": "Q1",
+          "topic_tags": ["riemann-integration"],
+          "difficulty": 4,
+          "question_text": "Prove that every continuous function on $[a,b]$ is Riemann integrable.",
+          "student_answer": {
+            "text": "BOB'S ANSWER: Uses uniform continuity on the compact interval.",
+            "media": [],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 3,
+              "clarity": 2
+            },
+            "notes": "Bob: ran out of time, proof is sketchy.",
+            "extensions": {}
+          },
+          "quality_flag": null,
+          "extensions": {}
+        }
+      ],
+      "reflection": "Bob: Integration section needs more practice.",
+      "source": "official_exam",
+      "author_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      "imported_from": null,
+      "quality_flag": null,
+      "extensions": {}
+    }
+  ],
+  "practice_items": [
+    {
+      "id": "d1d1d1d1-d1d1-4d1d-8d1d-d1d1d1d1d1d1",
+      "label": "Spivak 5.12",
+      "source": "textbook",
+      "source_detail": "Spivak, Calculus, 4th ed., Chapter 5, Problem 12",
+      "date_added": "2025-04-01",
+      "author_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "topic_tags": ["limits", "epsilon-delta"],
+      "difficulty": 3,
+      "question_text": "Prove that $\\lim_{x \\to a} x^2 = a^2$ for any real $a$.",
+      "student_answer": {
+        "text": "ALICE'S ANSWER: Choose $\\delta = \\min(|a|, \\epsilon/(3|a|+1))$.",
+        "media": [],
+        "extensions": {}
+      },
+      "hints": [],
+      "self_assessment": {
+        "obtained_marks": {
+          "rigor": 3,
+          "clarity": 2
+        },
+        "notes": "Alice: got the idea but the bound choice is inelegant.",
+        "extensions": {}
+      },
+      "quality_flag": null,
+      "extensions": {}
+    },
+    {
+      "id": "6395b02d-6006-42b3-9f4a-e24268554a30",
+      "label": "Rudin 2.4",
+      "source": "textbook",
+      "source_detail": "Rudin, Principles of Mathematical Analysis, Chapter 2, Problem 4",
+      "date_added": "2025-04-15",
+      "author_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      "topic_tags": ["metric-spaces", "compactness"],
+      "difficulty": 5,
+      "question_text": "Is the set of all rational numbers in $[0,1]$ compact in $\\mathbb{R}$?",
+      "student_answer": {
+        "text": "BOB'S ANSWER: No — it is not closed. The sequence of rational approximations to $\\sqrt{2}/2$ converges to an irrational.",
+        "media": [],
+        "extensions": {}
+      },
+      "self_assessment": {
+        "obtained_marks": {
+          "rigor": 5,
+          "clarity": 3
+        },
+        "notes": "Bob: clean counterexample.",
+        "extensions": {}
+      },
+      "quality_flag": null,
+      "extensions": {}
+    }
+  ],
+  "metadata": {
+    "last_modified": "2025-05-21T18:00:00Z",
+    "created_at": "2025-03-01T14:00:00Z",
+    "software": "lsf-tool v0.2.0",
+    "created_by": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    "signature": null,
+    "lineage": [
+      {
+        "event_id": "e3e3e3e3-e3e3-4e3e-8e3e-e3e3e3e3e3e3",
+        "type": "create",
+        "by": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "at": "2025-03-01T14:00:00Z",
+        "software": "lsf-tool v0.2.0",
+        "merged_sources": null,
+        "extensions": {}
+      },
+      {
+        "event_id": "e4e4e4e4-e4e4-4e4e-8e4e-e4e4e4e4e4e4",
+        "type": "edit",
+        "by": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        "at": "2025-05-21T18:00:00Z",
+        "software": "lsf-tool v0.2.0",
+        "merged_sources": null,
+        "extensions": {}
+      }
+    ],
+    "extensions": {}
+  }
+}

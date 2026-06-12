@@ -1,0 +1,157 @@
+{
+  "format_version": "1.0.0",
+  "course": {
+    "id": "40f559945e0fe13c82a1339e7a12c7fd",
+    "institution": "Massachusetts Institute of Technology",
+    "course_code": "18.100B",
+    "course_name": "Real Analysis",
+    "curriculum_version": "2024-2025",
+    "criteria": [
+      {
+        "id": "rigor",
+        "name": "Logical Rigor",
+        "max_score": 5,
+        "description": "Correctness and completeness of proofs.",
+        "extensions": {}
+      },
+      {
+        "id": "clarity",
+        "name": "Clarity",
+        "max_score": 3,
+        "description": "Structure and readability of the argument.",
+        "extensions": {}
+      }
+    ],
+    "exam_type": "proof_based",
+    "extensions": {}
+  },
+  "papers": [
+    {
+      "id": "a1a1a1a1-a1a1-4a1a-8a1a-a1a1a1a1a1a1",
+      "label": "Midterm 1",
+      "title": "Midterm 1 — Sequences and Limits",
+      "date": "2025-03-15",
+      "academic_year": "2024-2025",
+      "term": "Spring",
+      "total_time_minutes": 90,
+      "questions": [
+        {
+          "id": "b1b1b1b1-b1b1-4b1b-8b1b-b1b1b1b1b1b1",
+          "label": "Q1",
+          "topic_tags": ["limits", "epsilon-delta"],
+          "difficulty": 3,
+          "question_text": "Prove that $f(x) = x^2$ is continuous at $x = 2$.",
+          "hints": [
+            "Start by writing the definition of continuity at a point."
+          ],
+          "student_answer": {
+            "text": "ALICE'S ANSWER: Let $\\epsilon > 0$. Choose $\\delta = \\min(1, \\epsilon/5)$.",
+            "media": [],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 4,
+              "clarity": 3
+            },
+            "notes": "Alice's self-assessment — thinks she got most of it.",
+            "extensions": {}
+          },
+          "quality_flag": null,
+          "extensions": {}
+        },
+        {
+          "id": "c1c1c1c1-c1c1-4c1c-8c1c-c1c1c1c1c1c1",
+          "label": "Q2",
+          "topic_tags": ["sequences", "convergence"],
+          "difficulty": 4,
+          "question_text": "Let $(a_n)$ be defined by $a_1 = 1$, $a_{n+1} = \\sqrt{2 + a_n}$. Prove convergence.",
+          "student_answer": {
+            "text": "ALICE'S ANSWER: Bounded by 2, monotonic, limit is 2.",
+            "media": [],
+            "extensions": {}
+          },
+          "self_assessment": {
+            "obtained_marks": {
+              "rigor": 5,
+              "clarity": 3
+            },
+            "notes": "Alice checked against the mark scheme.",
+            "extensions": {}
+          },
+          "quality_flag": {
+            "status": "verified",
+            "reason": "Cross-referenced with official solutions.",
+            "flagged_by": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "flagged_at": "2025-03-18T10:30:00Z",
+            "extensions": {}
+          },
+          "extensions": {}
+        }
+      ],
+      "reflection": "Alice: Q1 was fine, Q2 felt solid.",
+      "source": "official_exam",
+      "author_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "imported_from": null,
+      "quality_flag": null,
+      "extensions": {}
+    }
+  ],
+  "practice_items": [
+    {
+      "id": "d1d1d1d1-d1d1-4d1d-8d1d-d1d1d1d1d1d1",
+      "label": "Spivak 5.12",
+      "source": "textbook",
+      "source_detail": "Spivak, Calculus, 4th ed., Chapter 5, Problem 12",
+      "date_added": "2025-04-01",
+      "author_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "topic_tags": ["limits", "epsilon-delta"],
+      "difficulty": 3,
+      "question_text": "Prove that $\\lim_{x \\to a} x^2 = a^2$ for any real $a$.",
+      "student_answer": {
+        "text": "ALICE'S ANSWER: Choose $\\delta = \\min(|a|, \\epsilon/(3|a|+1))$.",
+        "media": [],
+        "extensions": {}
+      },
+      "hints": [],
+      "self_assessment": {
+        "obtained_marks": {
+          "rigor": 3,
+          "clarity": 2
+        },
+        "notes": "Alice: got the idea but the bound choice is inelegant.",
+        "extensions": {}
+      },
+      "quality_flag": null,
+      "extensions": {}
+    }
+  ],
+  "metadata": {
+    "last_modified": "2025-04-20T12:00:00Z",
+    "created_at": "2025-02-01T09:00:00Z",
+    "software": "lsf-tool v0.1.0",
+    "created_by": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    "signature": null,
+    "lineage": [
+      {
+        "event_id": "e1e1e1e1-e1e1-4e1e-8e1e-e1e1e1e1e1e1",
+        "type": "create",
+        "by": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "at": "2025-02-01T09:00:00Z",
+        "software": "lsf-tool v0.1.0",
+        "merged_sources": null,
+        "extensions": {}
+      },
+      {
+        "event_id": "e2e2e2e2-e2e2-4e2e-8e2e-e2e2e2e2e2e2",
+        "type": "edit",
+        "by": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "at": "2025-04-20T12:00:00Z",
+        "software": "lsf-tool v0.1.0",
+        "merged_sources": null,
+        "extensions": {}
+      }
+    ],
+    "extensions": {}
+  }
+}

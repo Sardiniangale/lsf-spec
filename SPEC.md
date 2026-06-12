@@ -1,7 +1,7 @@
 # LSF: Lightweight Study Format Specification
 ## Version 1.0.0
 
-Status: Alpha
+Status: Beta
 
 License: MIT License
 
@@ -29,6 +29,7 @@ Repository full-release: https://github.com/Sardiniangale/lsf-spec
    - 5.9 [Practice Item Object](#59-practice-item-object)
    - 5.10 [Metadata Object](#510-metadata-object)
    - 5.11 [Lineage Event Object](#511-lineage-event-object)
+   - 5.12 [Math Rendering](#512-math-rendering)
 6. [Extensions](#6-extensions)
 7. [Media Handling](#7-media-handling)
 8. [Authorship & Identity](#8-authorship--identity)
@@ -82,7 +83,7 @@ Term: UUID4
 
 LSF is built on the following principles, listed in priority order.
 
-- Self contained. All metadata pdf's ect ect must be all contained within a single .lsf
+- Self contained. All metadata, media, and course data live inside a single .lsf file
 - Offline. There is zero need for communication to any external server for file authenticity
 - Human readable. The entire backbone is written in JSON, it must be easily inspectable in any text editor
 - Content agnostic. It needs to be able to work for any subject with a marking rubric
@@ -122,6 +123,19 @@ File Naming:
 
 The RECOMMENDED default filename is {Institution}_{CourseCode}.lsf (e.g MIT_18.100B.lsf). The extension MUST be .lsf. Tools MAY allow users to choose any filename.
 
+JSON Formatting Conventions:
+
+To improve diff readability during merges and maintain consistency across tools, compliant writers SHOULD serialise course.json with the following conventions:
+
+- 2-space indentation.
+- UTF-8 encoding without BOM (REQUIRED, not optional).
+- Keys sorted in lexicographic order within each object.
+- Numbers serialised without scientific notation (e.g 0.5 not 5e-1).
+- No trailing commas.
+- Forward slash (/) as the only path separator in strings.
+
+These conventions are not normative for validity — a file that uses tabs or unsorted keys is still valid. Tools MUST NOT reject a file solely for formatting. However, consistent formatting makes text-based merging significantly more reliable.
+
 ---
 
 ## 4. Deterministic Course Identity
@@ -135,9 +149,10 @@ Apply each step in order:
 1. Take the institution string and the course_code string as entered by the user.
 2. Normalize each string independently:
    a. Trim all leading and trailing whitespace (Unicode whitespace, including U+0020, U+0009, U+000A, U+000D, U+00A0).
-   b. Convert to lowercase using Unicode case folding (not locale-specific lowercasing).
-   c. Collapse all runs of internal whitespace (any sequence of one or more whitespace characters) to a single ASCII space (U+0020).
-   d. Remove all characters that are not ASCII alphanumeric (a–z, 0–9), ASCII hyphen (-), or ASCII space (U+0020). This step strips periods, punctuation, and non-ASCII letters.
+   b. Normalize to Unicode Normalization Form C (NFC). This collapses precomposed and decomposed forms of the same character (e.g "é" as U+00E9 and "é" as U+0065 U+0301) into a single representation.
+   c. Convert to lowercase using Unicode case folding (not locale-specific lowercasing).
+   d. Collapse all runs of internal whitespace (any sequence of one or more whitespace characters) to a single ASCII space (U+0020).
+   e. Remove all characters that are not Unicode alphanumeric, ASCII hyphen (-), or ASCII space (U+0020). "Unicode alphanumeric" means any character with Unicode general category L (Letter) or Nd (Decimal Number). This step strips punctuation, symbols, and separators but preserves letters and digits from all scripts.
 3. Concatenate: normalized_institution + "|" + normalized_course_code
 4. Encode the concatenated string as UTF-8 bytes.
 5. Compute the SHA-256 hash of those bytes.
@@ -152,25 +167,33 @@ course_code  = "18.100B"
 
 Step 2 (institution):
   Trim      → "Massachusetts Institute of Technology"
+  NFC       → "Massachusetts Institute of Technology"  (already NFC)
   Lowercase → "massachusetts institute of technology"
   Collapse  → "massachusetts institute of technology"
   Strip     → "massachusetts institute of technology"
 
 Step 2 (course_code):
   Trim      → "18.100B"
+  NFC       → "18.100B"                               (already NFC)
   Lowercase → "18.100b"
   Collapse  → "18.100b"
   Strip     → "18100b"
 
 Step 3: "massachusetts institute of technology|18100b"
 Step 5: SHA-256("massachusetts institute of technology|18100b")
-Step 6: first 32 hex chars → (see section 14 for verified value)
+Step 6: first 32 hex chars → 40f559945e0fe13c82a1339e7a12c7fd
+
+Verification: echo -n "massachusetts institute of technology|18100b" | sha256sum → 40f559945e0fe13c82a1339e7a12c7fd...
 ```
 Important Notes:
 
 - Year and semester are NOT part of the course ID. All past papers from any year belong to the same LSF file.
 - Two inputs that normalize identically produce the same ID. This is intentional.
 - The ID algorithm is fixed for all 1.x versions. Changes to the algorithm require a major version bump.
+- Unicode letters and digits from all scripts are preserved. "東京大学" and "Московский университет" remain distinct — each non-Latin institution produces a unique course ID. Accented Latin letters (é, ü, ñ) are also preserved.
+- NFC normalization (step 2b) ensures that "Université" (precomposed é) and "Université" (e + combining accent) produce the same ID.
+- "St. Andrews" and "St Andrews" still collide (the period is stripped). This is intentional — the course.id is an identity hint for merge detection, not a security mechanism. Users who encounter an unexpected merge prompt due to a collision can decline the merge.
+- Tools SHOULD warn when institution or course_code normalises to an empty or whitespace-only string. See section 14 for edge case test vectors.
 
 ---
 
@@ -234,7 +257,8 @@ Each element in course.criteria:
   "id": "rigor",
   "name": "Logical Rigor",
   "max_score": 5,
-  "description": "Correctness and completeness of proofs"
+  "description": "Correctness and completeness of proofs",
+  "extensions": { }
 }
 ```
 Fields:
@@ -243,8 +267,11 @@ Fields:
 - name (string, REQUIRED): Human-readable name.
 - max_score (number, REQUIRED): Maximum achievable score. MUST be a positive number.
 - description (string, OPTIONAL): Explanation of what this criterion measures.
+- extensions (object, OPTIONAL): See section 6.
 
 Uniqueness: All id values across course.criteria MUST be unique. Duplicate criterion IDs are a validation error.
+
+Immutability: Once a criterion id has been used in a self_assessment, that id SHOULD NOT be renamed. Renaming a criterion id breaks all existing self_assessment.obtained_marks references, since unknown criterion keys are a validation error (section 13). Tools SHOULD warn before allowing a criterion rename and SHOULD offer to update all existing references.
 
 ---
 
@@ -256,7 +283,8 @@ Uniqueness: All id values across course.criteria MUST be unique. Duplicate crite
     "rigor": 4,
     "clarity": 3
   },
-  "notes": "Forgot to justify the base case."
+  "notes": "Forgot to justify the base case.",
+  "extensions": { }
 }
 ```
 
@@ -264,6 +292,7 @@ Fields:
 
 - obtained_marks (object, REQUIRED): Map of criterion id → score (number).
 - notes (string, OPTIONAL): Free-form reflection on this attempt.
+- extensions (object, OPTIONAL): See section 6.
 
 Constraint: Every key in obtained_marks MUST correspond to an id in course.criteria. Scores MUST be non-negative numbers and SHOULD NOT exceed the criterion's max_score (tools MAY warn but MUST NOT reject). Unknown criterion keys are a validation error.
 
@@ -281,14 +310,16 @@ Constraint: Every key in obtained_marks MUST correspond to an id in course.crite
       "description": "Scanned handwritten proof",
       "available": true
     }
-  ]
+  ],
+  "extensions": { }
 }
 ```
 
 Fields:
 
-- text (string, OPTIONAL): Typed answer. Markdown and LaTeX ``($...$, $$...$$)`` are permitted.
+- text (string, OPTIONAL): Typed answer. Markdown is permitted. LaTeX math MAY be used within the delimiters $...$ (inline) and $$...$$ (display). See section 5.12 for the minimum math subset compliant readers MUST render.
 - media (array, OPTIONAL): List of attached files. MAY be empty or absent.
+- extensions (object, OPTIONAL): See section 6.
 
 Each entry in media:
 
@@ -312,7 +343,8 @@ Used to mark an item as disputed or verified. Appears as an OPTIONAL field quali
   "status": "disputed",
   "reason": "The formula in Q3 is incorrect. See Spivak p.142.",
   "flagged_by": "550e8400-e29b-41d4-a716-446655440000",
-  "flagged_at": "2026-05-10T14:00:00Z"
+  "flagged_at": "2026-05-10T14:00:00Z",
+  "extensions": { }
 }
 ```
 Fields:
@@ -321,6 +353,7 @@ Fields:
 - reason (string, OPTIONAL): Human-readable explanation. SHOULD be present when status is "disputed".
 - flagged_by (string, UUID4, REQUIRED): The author_id of the person setting this flag.
 - flagged_at (string, datetime, REQUIRED): UTC datetime in YYYY-MM-DDTHH:MM:SSZ format.
+- extensions (object, OPTIONAL): See section 6.
 
 Status semantics:
 
@@ -402,7 +435,7 @@ Fields:
 - label (string, OPTIONAL): Display label (e.g  "Q1", "Question 3b"). If absent, tools MAY display a truncated id.
 - topic_tags (array of strings, OPTIONAL): Labels for filtering and organisation. Each tag MUST be a non-empty string.
 - difficulty (number, OPTIONAL): Difficulty rating. RECOMMENDED range is 1–5. Tools MUST accept values outside this range.
-- question_text (string, REQUIRED): The question itself. Markdown and LaTeX are permitted. MUST NOT be empty.
+- question_text (string, REQUIRED): The question itself. Markdown is permitted. LaTeX math MAY be used. MUST NOT be empty. See section 5.12 for the math subset.
 - hints (array of strings, OPTIONAL): Ordered list of progressive hints. Each hint MUST be a non-empty string.
 - student_answer (object, OPTIONAL): The student's answer. See section 5.5.
 - self_assessment (object, OPTIONAL): Self-scoring against rubric. See section 5.4.
@@ -480,7 +513,8 @@ Each element in metadata.lineage:
   "by": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "at": "2025-09-01T09:00:00Z",
   "software": "lsf-tool v0.1.0",
-  "merged_sources": null
+  "merged_sources": null,
+  "extensions": { }
 }
 ```
 Fields:
@@ -491,10 +525,79 @@ Fields:
 - at (string, datetime, REQUIRED): UTC datetime of the event. MUST be in YYYY-MM-DDTHH:MM:SSZ format.
 - software (string, OPTIONAL): Tool name and version that generated this event.
 - merged_sources (array of UUID4 or null, OPTIONAL): For "merge" events: list of author_id values from the files that were merged into this one. null or absent for non-merge events.
+- extensions (object, OPTIONAL): See section 6.
 
 Append-only rule: Tools MUST NOT delete or modify existing lineage events. When saving after any edit, tools MUST append a new "edit" event. When saving after a merge, tools MUST append a new "merge" event.
 
-Merge deduplication: When two files are merged, the resulting lineage array is the union of both input arrays, deduplicated by event_id, then sorted ascending by at. If two events share an event_id but differ in other fields, the event from the file with the later last_modified wins.
+Merge deduplication: When two files are merged, the resulting lineage array is the union of both input arrays, deduplicated by event_id, then sorted ascending by at. If two events share an event_id and are identical in all fields, they are the same event and one copy is kept. If two events share an event_id but differ in other fields, both events MUST be retained — the append-only rule (above) takes precedence over deduplication. Tools SHOULD surface this conflict to the user.
+
+---
+
+### 5.12 Math Rendering
+
+Several text fields in this spec (question_text, answer text, hints, reflection, notes) MAY contain LaTeX math notation. To ensure interoperable rendering, compliant readers MUST render the math subset defined below. Commands outside this subset SHOULD degrade gracefully (shown as raw LaTeX source, not discarded or corrupted).
+
+Delimiters:
+
+- $...$ for inline math
+- $$...$$ for display math
+
+A compliant reader MUST render the following math constructs:
+
+Greek letters (lowercase):
+  \alpha \beta \gamma \delta \epsilon \varepsilon \zeta \eta
+  \theta \vartheta \iota \kappa \lambda \mu \nu \xi \pi \varpi
+  \rho \varrho \sigma \varsigma \tau \upsilon \phi \varphi \chi \psi \omega
+
+Greek letters (uppercase):
+  \Gamma \Delta \Theta \Lambda \Xi \Pi \Sigma \Upsilon \Phi \Psi \Omega
+
+Binary operators and relations:
+  \pm \mp \times \div \cdot \leq \geq \neq \approx \equiv \sim
+  \subset \subseteq \supset \supseteq \in \notin \cup \cap \setminus
+  \land \lor \neg
+
+Quantifiers and symbols:
+  \forall \exists \emptyset \infty \partial \nabla \to \mapsto
+
+Fractions and roots:
+  \frac{numerator}{denominator}
+  \sqrt{radicand}
+  \sqrt[n]{radicand}
+
+Limits, sums, and integrals:
+  \lim \sum \prod \int \iint \oint
+  (subscripts and superscripts with _ and ^ for bounds)
+
+Accents and decorations:
+  \hat \bar \vec \dot \ddot \tilde \overline \underline
+
+Text formatting in math:
+  \text{...} \mathrm{...} \mathbf{...} \mathit{...} \mathbb{...} \mathcal{...}
+
+Standard functions:
+  \sin \cos \tan \log \ln \exp \max \min \sup \inf \lim \det
+
+Arrows:
+  \to \rightarrow \leftarrow \Rightarrow \Leftrightarrow \mapsto
+
+Delimiter sizing:
+  \left( ... \right)  \left[ ... \right]  \left\{ ... \right\}
+  \left| ... \right|  \langle ... \rangle
+
+Basic spacing:
+  \, \; \! \quad \qquad
+
+Line breaks in display math:
+  \\\\ (double backslash)
+
+Tools MAY support additional LaTeX packages and commands. Unknown commands MUST
+be preserved as raw source text when the file is round-tripped — they MUST NOT
+be discarded.
+
+This subset is intentionally minimal. It covers what the vast majority of STEM
+coursework uses. Domain-specific notations (e.g chemical formulas) belong in extensions or community profiles. Adding
+a new command to the math subset requires a spec revision.
 
 ---
 
@@ -604,7 +707,7 @@ Scenario: Same id, different content, different author_id
   Required behaviour: MUST show side-by-side preview. User MUST choose one version or manually edit. Tool MUST NOT auto-resolve.
 
 Scenario: Same id, different content, same author_id
-  Required behaviour: SHOULD show a diff. Tool MAY offer "keep newer" based on last_modified. User MUST confirm.
+  Required behaviour: SHOULD show a diff. Tool MAY offer "keep newer" based on each input file's metadata.last_modified. Since this is a file-level timestamp (not per-object), it is a heuristic — the user MUST confirm.
 
 Scenario: Same id, only extensions differ
   Required behaviour: Merge extensions objects by key union. If a key exists in both with differing values, treat as a conflict on that key alone and surface to user.
@@ -791,7 +894,7 @@ The following are warnings. A compliant reader SHOULD surface these to the user 
 
 ## 14. Conformance Test Vectors
 
-A set of normative test vectors is provided in the file `test`.
+A set of normative test vectors is provided in the `tests/` directory.
 Implementors **MUST** validate their implementations against these vectors to ensure correctness of the course ID generation and other normative algorithms.
 
 The test vectors cover:
@@ -804,7 +907,7 @@ The test vectors cover:
 
 ## 15. Example
 
-Please refer to `examples/README.md` for a full list of examples and info and instructions regarding thoes examples.  
+Please refer to `examples/README.md` for a full list of examples along with instructions for using them.  
 
 ---
 

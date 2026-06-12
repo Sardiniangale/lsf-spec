@@ -1,0 +1,492 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Sardiniangale/lsf-spec/schemas/course.json.schema.json",
+  "title": "LSF course.json Schema",
+  "description": "Normative JSON Schema for the LSF course.json file (SPEC v1.0.0).",
+  "type": "object",
+  "required": ["format_version", "course", "papers", "practice_items", "metadata"],
+  "additionalProperties": true,
+  "properties": {
+    "format_version": {
+      "type": "string",
+      "description": "SemVer version of the LSF spec this file conforms to.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "course": {
+      "type": "object",
+      "required": ["id", "institution", "course_code", "course_name", "criteria"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Deterministic course identifier — 32 lowercase hex characters.",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "institution": {
+          "type": "string",
+          "description": "Full institution name. MUST NOT be empty.",
+          "minLength": 1
+        },
+        "course_code": {
+          "type": "string",
+          "description": "Official course code. MUST NOT be empty.",
+          "minLength": 1
+        },
+        "course_name": {
+          "type": "string",
+          "description": "Human-readable course name. MUST NOT be empty.",
+          "minLength": 1
+        },
+        "curriculum_version": {
+          "type": "string",
+          "description": "Free-form syllabus or curriculum identifier."
+        },
+        "criteria": {
+          "type": "array",
+          "description": "Grading rubric. MUST contain at least one criterion.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "max_score"],
+            "additionalProperties": true,
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique key within course.criteria.",
+                "pattern": "^[a-z0-9_-]+$"
+              },
+              "name": {
+                "type": "string",
+                "description": "Human-readable criterion name."
+              },
+              "max_score": {
+                "type": "number",
+                "description": "Maximum achievable score. MUST be positive.",
+                "exclusiveMinimum": 0
+              },
+              "description": {
+                "type": "string",
+                "description": "Explanation of what this criterion measures."
+              },
+              "extensions": {
+                "type": "object",
+                "description": "Extension data. See SPEC §6.",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "exam_type": {
+          "type": "string",
+          "description": "Hint for tools. Suggested: proof_based, written, mixed, lab, multiple_choice."
+        },
+        "extensions": {
+          "type": "object",
+          "description": "Extension data. See SPEC §6.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "papers": {
+      "type": "array",
+      "description": "List of past paper objects. MAY be empty.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "date", "questions", "author_id"],
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Globally unique UUID4 identifier.",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          },
+          "label": {
+            "type": "string",
+            "description": "Short display label."
+          },
+          "title": {
+            "type": "string",
+            "description": "Full title of the exam or paper.",
+            "minLength": 1
+          },
+          "date": {
+            "type": "string",
+            "description": "Date the exam was taken. YYYY-MM-DD format.",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "academic_year": {
+            "type": "string",
+            "description": "e.g. 2024-2025."
+          },
+          "term": {
+            "type": "string",
+            "description": "e.g. Spring, Fall, Semester 1."
+          },
+          "total_time_minutes": {
+            "type": "integer",
+            "description": "Duration of the exam in minutes. MUST be positive.",
+            "exclusiveMinimum": 0
+          },
+          "questions": {
+            "type": "array",
+            "description": "List of question objects. MAY be empty.",
+            "items": { "$ref": "#/$defs/question" }
+          },
+          "reflection": {
+            "type": "string",
+            "description": "Free-form post-exam notes."
+          },
+          "source": {
+            "type": "string",
+            "description": "Origin. Suggested: official_exam, mock_exam, peer_shared."
+          },
+          "author_id": {
+            "type": "string",
+            "description": "UUID4 of the person who created this entry.",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          },
+          "imported_from": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "string",
+                "description": "UUID4 of the original author if imported.",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+              }
+            ]
+          },
+          "quality_flag": { "$ref": "#/$defs/qualityFlag" },
+          "extensions": {
+            "type": "object",
+            "description": "Extension data. See SPEC §6.",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "practice_items": {
+      "type": "array",
+      "description": "List of standalone practice items. MAY be empty.",
+      "items": { "$ref": "#/$defs/practiceItem" }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["last_modified", "lineage"],
+      "additionalProperties": true,
+      "properties": {
+        "last_modified": {
+          "type": "string",
+          "description": "UTC datetime of last save. YYYY-MM-DDTHH:MM:SSZ format.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "created_at": {
+          "type": "string",
+          "description": "UTC datetime the file was first created. YYYY-MM-DDTHH:MM:SSZ format.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "software": {
+          "type": "string",
+          "description": "Name and version of the tool that last saved the file."
+        },
+        "created_by": {
+          "type": "string",
+          "description": "UUID4 of the original creator of this file.",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "signature": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "string",
+              "description": "Reserved for digital signatures."
+            }
+          ]
+        },
+        "lineage": {
+          "type": "array",
+          "description": "Ordered list of provenance events. MUST NOT be absent.",
+          "items": {
+            "type": "object",
+            "required": ["event_id", "type", "by", "at"],
+            "additionalProperties": true,
+            "properties": {
+              "event_id": {
+                "type": "string",
+                "description": "Globally unique UUID4 for this event.",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+              },
+              "type": {
+                "type": "string",
+                "description": "One of: create, merge, edit. Tools MUST accept unknown types."
+              },
+              "by": {
+                "type": "string",
+                "description": "UUID4 of the person who performed this action.",
+                "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+              },
+              "at": {
+                "type": "string",
+                "description": "UTC datetime of the event. YYYY-MM-DDTHH:MM:SSZ format.",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+              },
+              "software": {
+                "type": "string",
+                "description": "Tool name and version that generated this event."
+              },
+              "merged_sources": {
+                "oneOf": [
+                  { "type": "null" },
+                  {
+                    "type": "array",
+                    "description": "List of UUID4 author_id values from merged files.",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+                    }
+                  }
+                ]
+              },
+              "extensions": {
+                "type": "object",
+                "description": "Extension data. See SPEC §6.",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "description": "Extension data. See SPEC §6.",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "question": {
+      "type": "object",
+      "required": ["id", "question_text"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Globally unique UUID4 for this question.",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "label": {
+          "type": "string",
+          "description": "Display label."
+        },
+        "topic_tags": {
+          "type": "array",
+          "description": "Labels for filtering and organisation.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "difficulty": {
+          "type": "number",
+          "description": "Difficulty rating. RECOMMENDED range 1–5."
+        },
+        "question_text": {
+          "type": "string",
+          "description": "The question itself. Markdown and LaTeX permitted.",
+          "minLength": 1
+        },
+        "hints": {
+          "type": "array",
+          "description": "Ordered list of progressive hints.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "student_answer": { "$ref": "#/$defs/answer" },
+        "self_assessment": { "$ref": "#/$defs/selfAssessment" },
+        "quality_flag": { "$ref": "#/$defs/qualityFlag" },
+        "extensions": {
+          "type": "object",
+          "description": "Extension data. See SPEC §6.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "practiceItem": {
+      "type": "object",
+      "required": ["id", "question_text", "author_id"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Globally unique UUID4 for this practice item.",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "label": {
+          "type": "string",
+          "description": "Display label."
+        },
+        "source": {
+          "type": "string",
+          "description": "Origin. Suggested: textbook, weekly_quiz, online, lecture_problem_set."
+        },
+        "source_detail": {
+          "type": "string",
+          "description": "Full bibliographic reference."
+        },
+        "date_added": {
+          "type": "string",
+          "description": "Date added by the student. YYYY-MM-DD format.",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "author_id": {
+          "type": "string",
+          "description": "UUID4 of the person who added this item.",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        },
+        "topic_tags": {
+          "type": "array",
+          "description": "Labels for filtering and organisation.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "difficulty": {
+          "type": "number",
+          "description": "Difficulty rating. RECOMMENDED range 1–5."
+        },
+        "question_text": {
+          "type": "string",
+          "description": "The question itself. Markdown and LaTeX permitted.",
+          "minLength": 1
+        },
+        "student_answer": { "$ref": "#/$defs/answer" },
+        "hints": {
+          "type": "array",
+          "description": "Ordered list of progressive hints.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "self_assessment": { "$ref": "#/$defs/selfAssessment" },
+        "quality_flag": { "$ref": "#/$defs/qualityFlag" },
+        "extensions": {
+          "type": "object",
+          "description": "Extension data. See SPEC §6.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "answer": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Typed answer. Markdown and LaTeX permitted."
+        },
+        "media": {
+          "type": "array",
+          "description": "List of attached files. MAY be empty or absent.",
+          "items": {
+            "type": "object",
+            "required": ["path", "mime_type"],
+            "additionalProperties": true,
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Relative path from archive root. MUST start with media/.",
+                "pattern": "^media/"
+              },
+              "mime_type": {
+                "type": "string",
+                "description": "IANA media type."
+              },
+              "description": {
+                "type": "string",
+                "description": "Human-readable description of the attached file."
+              },
+              "available": {
+                "type": "boolean",
+                "description": "If false, the file was intentionally stripped. Defaults to true.",
+                "default": true
+              },
+              "extensions": {
+                "type": "object",
+                "description": "Extension data. See SPEC §6.",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "extensions": {
+          "type": "object",
+          "description": "Extension data. See SPEC §6.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "selfAssessment": {
+      "type": "object",
+      "required": ["obtained_marks"],
+      "additionalProperties": true,
+      "properties": {
+        "obtained_marks": {
+          "type": "object",
+          "description": "Map of criterion id to score. Keys MUST correspond to course.criteria ids. Scores MUST be non-negative numbers.",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "notes": {
+          "type": "string",
+          "description": "Free-form reflection on this attempt."
+        },
+        "extensions": {
+          "type": "object",
+          "description": "Extension data. See SPEC §6.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "qualityFlag": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["status", "flagged_by", "flagged_at"],
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string",
+              "description": "One of: unreviewed, disputed, verified.",
+              "enum": ["unreviewed", "disputed", "verified"]
+            },
+            "reason": {
+              "type": "string",
+              "description": "Human-readable explanation. SHOULD be present when status is disputed."
+            },
+            "flagged_by": {
+              "type": "string",
+              "description": "UUID4 of the person setting this flag.",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            "flagged_at": {
+              "type": "string",
+              "description": "UTC datetime in YYYY-MM-DDTHH:MM:SSZ format.",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+            },
+            "extensions": {
+              "type": "object",
+              "description": "Extension data. See SPEC §6.",
+              "additionalProperties": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}
