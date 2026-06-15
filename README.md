@@ -1,8 +1,8 @@
 # LSF: Lightweight Study Format
 
-A self-contained, offline-first file format for storing and sharing marked coursework with grading rubrics.
+A self contained, offline first file format for storing and sharing marked coursework with grading rubrics, primarily intended for self studying.
 
-Status: BETA, specification complete, tests and examples in progress.
+Status: BETA, core idea complete. Working on tests and extensions. May add further latex extentions.
 
 ## Design Goals
 
@@ -24,8 +24,8 @@ Status: BETA, specification complete, tests and examples in progress.
 
 ## Repository
 
-- Pre-release: https://git.dyno.cx/Sardiniangale/Lightweight_Study_Format
-- Full release (GitHub): https://github.com/Sardiniangale/lsf-spec
+- Testing repo (at least till release candidate): https://git.dyno.cx/Sardiniangale/Lightweight_Study_Format
+- Full current release (GitHub): https://github.com/Sardiniangale/lsf-spec
 
 ## License
 

@@ -10,7 +10,7 @@ The algorithm, in order: trim → NFC normalize → casefold → collapse whites
 
 ## Normalisation Tests
 
-### TV1 — Worked Example (from SPEC §4)
+### TV1: Worked Example (from SPEC §4)
 
 ```
 institution     = "Massachusetts Institute of Technology"
@@ -32,7 +32,7 @@ step 3 (concat)       → "massachusetts institute of technology|18100b"
 step 6 (sha256[:32])  → 40f559945e0fe13c82a1339e7a12c7fd
 ```
 
-### TV2 — Whitespace Normalisation
+### TV2: Whitespace Normalisation
 
 ```
 institution     = "  University   of   Cambridge  "
@@ -44,7 +44,7 @@ concatenated       → "university of cambridge|maths tripos"
 course.id          → a61e2d59497746ca1f19727ddb613cea
 ```
 
-### TV3 — Unicode Non-Breaking Space (U+00A0)
+### TV3: Unicode Non-Breaking Space (U+00A0)
 
 ```
 institution     = "University of Cambridge"
@@ -58,7 +58,7 @@ course.id          → a61e2d59497746ca1f19727ddb613cea
 
 Note: TV2 and TV3 produce the same course.id. U+00A0 is whitespace per the spec and collapses to ASCII space.
 
-### TV4 — Special Characters Stripped (Comma)
+### TV4: Special Characters Stripped (Comma)
 
 ```
 institution     = "University of California, Berkeley"
@@ -70,7 +70,7 @@ concatenated       → "university of california berkeley|cs 61a"
 course.id          → a100f7030df49bf99c15bb9473bc4a27
 ```
 
-### TV5 — Accented Latin Letters Preserved
+### TV5: Accented Latin Letters Preserved
 
 ```
 institution     = "Université de Paris"
@@ -82,9 +82,9 @@ concatenated       → "université de paris|math101"
 course.id          → ef62cf87cf1e1159c0adfd5b8cf803aa
 ```
 
-Note: The accented 'é' is preserved, not stripped. "Université" and "Universite" now produce different course IDs — this is intentional.
+Note: The accented 'é' is preserved, not stripped. "Université" and "Universite" now produce different course IDs: this is intentional.
 
-### TV6 — Periods Stripped
+### TV6: Periods Stripped
 
 ```
 institution     = "St. Andrews University"
@@ -98,7 +98,7 @@ course.id          → 14688e80c82c1f843b502a13ab09c6ab
 
 Note: "St. Andrews" and "St Andrews" produce the same ID (period stripped). This is a known collision class.
 
-### TV7 — Hyphens Preserved
+### TV7: Hyphens Preserved
 
 ```
 institution     = "University of Wisconsin-Madison"
@@ -110,7 +110,7 @@ concatenated       → "university of wisconsin-madison|math 521"
 course.id          → c0978c0ac198884286e8861182f572f0
 ```
 
-### TV8 — Non-ASCII + Numbers + Hyphens (Umlaut Preserved)
+### TV8: Non-ASCII + Numbers + Hyphens (Umlaut Preserved)
 
 ```
 institution     = "ETH Zürich"
@@ -122,7 +122,7 @@ concatenated       → "eth zürich|401-0231-00l"
 course.id          → 2ab1b32d34b147c9df3b21697db26081
 ```
 
-### TV9 — Tab and Newline as Whitespace
+### TV9: Tab and Newline as Whitespace
 
 ```
 institution     = "University\tof\nQueensland"
@@ -138,7 +138,7 @@ course.id          → 8159ce26eec9963451e79e1c5e2597be
 
 ## Non-Latin Script Tests
 
-### TV10 — Cyrillic Preserved
+### TV10: Cyrillic Preserved
 
 ```
 institution     = "Московский университет"
@@ -150,7 +150,7 @@ concatenated       → "московский университет|math101"
 course.id          → e37de5ce18fb56c366afd320945a21a3
 ```
 
-### TV11 — Japanese Preserved
+### TV11: Japanese Preserved
 
 ```
 institution     = "東京大学"
@@ -162,7 +162,7 @@ concatenated       → "東京大学|math101"
 course.id          → 4f626a48dc43fb4cc5bd072b12d1a88a
 ```
 
-### TV12 — Chinese Preserved
+### TV12: Chinese Preserved
 
 ```
 institution     = "北京大学"
@@ -180,7 +180,7 @@ Note: TV10, TV11, and TV12 all use the same course_code but produce different co
 
 ## NFC Normalisation Tests
 
-### TV13 — Precomposed Accent (U+00E9)
+### TV13: Precomposed Accent (U+00E9)
 
 ```
 institution     = "Université de Paris"          (é as single code point U+00E9)
@@ -191,7 +191,7 @@ concatenated       → "université de paris|math101"
 course.id          → ef62cf87cf1e1159c0adfd5b8cf803aa
 ```
 
-### TV14 — Decomposed Accent (U+0065 U+0301)
+### TV14: Decomposed Accent (U+0065 U+0301)
 
 ```
 institution     = "Université de Paris"          (é as e + combining acute accent U+0301)
@@ -202,13 +202,13 @@ concatenated       → "université de paris|math101"
 course.id          → ef62cf87cf1e1159c0adfd5b8cf803aa
 ```
 
-Note: TV13 and TV14 produce the same course.id. This is the purpose of NFC normalization — two byte-level representations of the same visual text must not produce different IDs.
+Note: TV13 and TV14 produce the same course.id. This is the purpose of NFC normalization: two byte-level representations of the same visual text must not produce different IDs.
 
 ---
 
 ## Edge Case Tests
 
-### TV15 — Both Inputs Only Special Characters
+### TV15: Both Inputs Only Special Characters
 
 ```
 institution     = "!!!"
@@ -220,7 +220,7 @@ concatenated       → "|"
 course.id          → cbe5cfdf7c2118a9c3d78ef1d684f3af
 ```
 
-### TV16 — Empty Inputs
+### TV16: Empty Inputs
 
 ```
 institution     = ""
@@ -248,7 +248,7 @@ Period vs space:
 
 Precomposed vs decomposed (NFC makes these collide by design):
   "Université" (U+00E9) and "Université" (U+0065 U+0301)
-  Collide? Yes. This is the intended behaviour of step 2b — they are the same text.
+  Collide? Yes. This is the intended behaviour of step 2b: they are the same text.
 
 Both inputs normalise to empty:
   "!!!" and "###" with any course code that also normalises to empty

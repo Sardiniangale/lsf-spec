@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# lsf test suite — validate course ID algorithm against normative test vectors
+# lsf test suite: validate course ID algorithm against normative test vectors
 # usage: python3 run_tests.py
 # requires: python 3.7+ (standard library only)
 
@@ -35,7 +35,7 @@ def course_id(institution, course_code):
     return h[:32], ni, nc, concat
 
 
-# -- test cases ----------------------------------------------------------
+# test cases
 # each: (label, institution, course_code, expected_normalized_inst,
 #         expected_normalized_code, expected_concatenated, expected_course_id)
 
@@ -124,7 +124,7 @@ TESTS = [
      "université de paris|math101",
      "ef62cf87cf1e1159c0adfd5b8cf803aa"),
 
-    ("TV15: only special characters — empty",
+    ("TV15: only special characters: empty",
      "!!!", "###",
      "", "",
      "|",

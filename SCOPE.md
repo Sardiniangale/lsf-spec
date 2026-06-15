@@ -118,4 +118,4 @@ not belong in the core spec.
 
 ## Version History
 
-1.0.0 — Initial scope document. Defines boundaries for the v1.x spec series.
+1.0.0 Initial scope document. Defines boundaries for the v1.x spec series.

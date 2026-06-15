@@ -539,6 +539,7 @@ Several text fields in this spec (question_text, answer text, hints, reflection,
 
 Delimiters:
 
+```
 - $...$ for inline math
 - $$...$$ for display math
 
@@ -590,9 +591,10 @@ Basic spacing:
 
 Line breaks in display math:
   \\\\ (double backslash)
+```
 
 Tools MAY support additional LaTeX packages and commands. Unknown commands MUST
-be preserved as raw source text when the file is round-tripped — they MUST NOT
+be preserved as raw source text when the file is round-tripped they MUST NOT
 be discarded.
 
 This subset is intentionally minimal. It covers what the vast majority of STEM
